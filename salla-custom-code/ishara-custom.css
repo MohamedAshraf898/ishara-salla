@@ -366,3 +366,37 @@ custom-salla-product-card:hover .ish-qv,.ish-qv:focus-visible{opacity:1;transfor
   .ish-stats{gap:22px;flex-wrap:wrap;justify-content:center}
 }
 .ish-head>.ish-tabs{flex-direction:row}
+
+/* ================= category (collection) banner ================= */
+.ish-coll{padding:20px 0 6px}
+.ish-coll__band{position:relative;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;gap:24px;min-height:260px;border-radius:26px;overflow:hidden;padding:34px 40px;color:#fff;background:linear-gradient(120deg,var(--ish-ink),#16244d);isolation:isolate}
+.ish-coll__band::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(40% 90% at 85% 40%,rgba(0,194,255,.35),transparent 70%),radial-gradient(35% 80% at 10% 100%,rgba(23,70,209,.6),transparent 70%)}
+.ish-coll__txt{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ish-coll__txt .ish-pill{color:var(--ish-cyan)}
+.ish-coll__txt h1{font-size:40px;line-height:1.2;font-weight:900;margin:0;color:#fff;text-wrap:balance}
+.ish-coll__txt p{margin:0;opacity:.75;max-width:46ch}
+.ish-coll__stats{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 0}
+.ish-coll__stats div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:8px 14px;display:flex;flex-direction:column-reverse}
+.ish-coll__stats dt{font-size:11px;opacity:.7}
+.ish-coll__stats dd{margin:0;font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+.ish-coll__pics{position:relative;height:220px}
+.ish-coll__pics span{position:absolute;width:44%;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 24px 50px rgba(0,0,0,.45)}
+.ish-coll__pics img{width:100%;height:100%;object-fit:cover}
+.ish-coll__pics span:nth-child(1){inset-inline-start:28%;top:-8%;z-index:2;transform:rotate(-2deg)}
+.ish-coll__pics span:nth-child(2){inset-inline-start:0;top:14%;width:36%;transform:rotate(-7deg)}
+.ish-coll__pics span:nth-child(3){inset-inline-end:0;top:16%;width:36%;transform:rotate(6deg)}
+.ish-coll__pics.ish-n1 span:nth-child(1){inset-inline-start:28%}
+.ish-coll__chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:14px 2px 4px}
+.ish-coll__chips::-webkit-scrollbar{display:none}
+.ish-coll__chips a{flex:none;text-decoration:none;color:var(--ish-text);border:1px solid var(--ish-line);background:#fff;border-radius:999px;padding:8px 16px;font-weight:700;font-size:14px;transition:border-color .2s,color .2s}
+.ish-coll__chips a:hover{border-color:var(--ish-primary);color:var(--ish-primary)}
+.ish-coll__chips a[aria-current]{background:var(--ish-ink);border-color:var(--ish-ink);color:#fff}
+@media (max-width:767px){
+  .ish-coll__band{grid-template-columns:1fr;padding:24px 20px;min-height:0;gap:12px}
+  .ish-coll__txt h1{font-size:28px}
+  .ish-coll__pics{display:none}
+  .ish-coll__stats dd{font-size:16px}
+}
+
+/* narrow screens: let grid/flex children shrink instead of widening the page */
+.ish-setup>*,.ish-quiz>*,.ish-fbt>*,.ish-calc>*,.ish-scene--grid>*,.ish-row__mid{min-width:0}

@@ -95,6 +95,10 @@
 
     listing: { quickView: true, compare: true, maxCompare: 3 },
 
+    // Category (collection) pages: banner with the category name, live stats from your products,
+    // a few product photos and quick links to the other categories.
+    collection: { enabled: true, eyebrow: 'تسوّق حسب القسم', text: 'منتجات أصلية، توصيل سريع، وتقسيط بدون فوائد.', chips: true, photos: true },
+
     mobileBar: { enabled: true }
   };
 
@@ -152,6 +156,7 @@
   function imgOf(p) { return (p && p.image && p.image.url) || (p && p.thumbnail) || (p && p.images && p.images[0] && p.images[0].url) || ''; }
   function discount(p) { return p.is_on_sale && num(p.regular_price) > num(p.price) ? Math.round((1 - num(p.price) / num(p.regular_price)) * 100) : 0; }
   function catIdFromUrl(u) { var m = decodeURI(String(u || '')).match(/\/c(\d+)(?:[\/?#]|$)/); return m ? +m[1] : null; }
+  function catId(x) { return (x && (+x.id || catIdFromUrl(x.url))) || null; }
   function remember(list) { (list || []).forEach(function (p) { STORE[p.id] = p; }); return list || []; }
   function page() { try { return salla.config.get('page') || {}; } catch (e) { return {}; } }
   function nProducts(n) { return n === 1 ? 'منتج واحد' : n === 2 ? 'منتجان' : n + ' منتجات'; }
@@ -330,7 +335,7 @@
     var st = { s: 0, cat: null, catName: '', budget: null, budgetName: '', prio: null, prioName: '' }, cats = [], pool = [];
     var PRIOS = [['price', 'أفضل سعر', '﷼'], ['sold', 'الأكثر مبيعاً', '★'], ['discount', 'أعلى خصم', '%']];
     salla.api.product.categories().then(function (r) {
-      cats = ((r && r.data) || []).map(function (x) { return { id: catIdFromUrl(x.url), name: x.name, image: x.image }; }).filter(function (x) { return x.id; }).slice(0, 6);
+      cats = ((r && r.data) || []).map(function (x) { return { id: catId(x), name: x.name, image: x.image }; }).filter(function (x) { return x.id; }).slice(0, 6);
       if (!cats.length) { sec.remove(); return; }
       render();
     }).catch(function (e) { warn(e); sec.remove(); });
@@ -425,7 +430,7 @@
   var CATS = null;
   function getCats() {
     if (!CATS) CATS = salla.api.product.categories().then(function (r) {
-      return ((r && r.data) || []).map(function (x) { var img = x.image && (x.image.url || x.image); return { name: x.name, url: x.url, image: typeof img === 'string' ? img : '' }; }).filter(function (x) { return x.name && x.url; });
+      return ((r && r.data) || []).map(function (x) { var img = x.image && (x.image.url || x.image); return { id: catId(x), name: x.name, url: x.url, image: typeof img === 'string' ? img : '' }; }).filter(function (x) { return x.name && x.url; });
     }).catch(function (e) { warn(e); return []; });
     return CATS;
   }
@@ -759,6 +764,38 @@
     try { salla.cart.event.onUpdated(function (r) { var c = r && (r.cart || r.data || r); if (c && c.count != null) setCount(c.count); }); } catch (e) {}
   }
 
+
+  /* ===================== 5b) CATEGORY (COLLECTION) PAGE ===================== */
+  function collectionPage() {
+    var c = CONFIG.collection; if (!c || !c.enabled) return;
+    var pg = page(), id = +pg.id || catIdFromUrl(location.href);
+    var main = $('.app-inner > main') || $('main'); if (!main) return;
+    var sec = section('ish-coll', ''); main.insertBefore(sec, main.firstChild);
+    Promise.all([getCats(), id ? fetchProducts({ source: 'categories', source_value: [id], limit: 50 }) : Promise.resolve([])]).then(function (r) {
+      var cats = r[0], list = r[1];
+      var cur = cats.filter(function (x) { return catId(x) === id; })[0];
+      var name = cur ? cur.name : String(pg.title || document.title.split('|')[0] || '').trim();
+      if (!name) { sec.remove(); return; }
+      var prices = list.map(function (p) { return num(p.price); }).filter(Boolean);
+      var offers = list.filter(function (p) { return discount(p) > 0; }).length;
+      var stats = [];
+      if (list.length) stats.push([list.length >= 50 ? '+50' : String(list.length), 'عدد المنتجات']);
+      if (prices.length) stats.push([money(Math.min.apply(null, prices)), 'يبدأ من']);
+      if (offers) stats.push([String(offers), offers === 1 ? 'منتج عليه خصم' : 'منتجات عليها خصم']);
+      var pics = c.photos ? list.map(imgOf).filter(Boolean).slice(0, 3) : [];
+      var chips = c.chips && cats.length > 1 ? '<nav class="ish-coll__chips" aria-label="الأقسام">' + cats.slice(0, 10).map(function (x) {
+        var on = catId(x) === id;
+        return '<a href="' + esc(x.url) + '"' + (on ? ' aria-current="page"' : '') + '>' + esc(x.name) + '</a>';
+      }).join('') + '</nav>' : '';
+      sec.firstChild.innerHTML = '<div class="ish-coll__band"><div class="ish-coll__txt">' +
+        (c.eyebrow ? '<span class="ish-pill">' + esc(c.eyebrow) + '</span>' : '') +
+        '<h1>' + esc(name) + '</h1>' + (c.text ? '<p>' + esc(c.text) + '</p>' : '') +
+        (stats.length ? '<dl class="ish-coll__stats">' + stats.map(function (x) { return '<div><dt>' + esc(x[1]) + '</dt><dd>' + x[0] + '</dd></div>'; }).join('') + '</dl>' : '') +
+        '</div>' + (pics.length ? '<div class="ish-coll__pics ish-n' + pics.length + '">' + pics.map(function (u) { return '<span><img src="' + esc(u) + '" alt="" loading="lazy"></span>'; }).join('') + '</div>' : '') +
+        '</div>' + chips;
+    });
+  }
+
   /* ===================== 7) START ===================== */
   function start() {
     var slug = page().slug || '';
@@ -775,6 +812,7 @@
       }
     }
     if (slug === 'product.single' || document.body.classList.contains('product-single')) productPage();
+    if (slug === 'product.index' || document.body.classList.contains('product-index')) collectionPage();
     if (CONFIG.listing.quickView || CONFIG.listing.compare) {
       enhanceCards(document);
       new MutationObserver(function (ms) { ms.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) enhanceCards(n.matches && n.matches('custom-salla-product-card') ? n.parentNode : n); }); }); })

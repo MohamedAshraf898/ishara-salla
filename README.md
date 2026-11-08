@@ -2,7 +2,7 @@
 
 Custom sections for an electronics store on Salla (Raed theme), plus a demo product catalog.
 
-**Live preview:** `index.html` (served by GitHub Pages). It runs the same custom code with a stand-in for the Salla SDK and 30 sample products. Prices are approximate and "add to cart" is a demo.
+**Live preview:** `index.html` (home) and `collection.html` (category page, e.g. `collection.html#c1`), served by GitHub Pages. It runs the same custom code with a stand-in for the Salla SDK and 30 sample products. Prices are approximate and "add to cart" is a demo.
 
 ## Files
 
@@ -14,6 +14,10 @@ Custom sections for an electronics store on Salla (Raed theme), plus a demo prod
 | `products/ishara-salla-products.xlsx` | 30 products in Salla's own import template (products sheet only) |
 | `products/ishara-electronics-products.csv` | Same products as CSV |
 | `products/ishara-product-photos.zip` | Product photos (1200×1200, named by SKU) |
+
+## Category page
+
+On category pages (`product.index`) the JS adds a banner at the top: the category name, live stats (product count, lowest price, how many are on sale), a few product photos, and quick links to the other categories. Turn it off or change the text in `CONFIG.collection`.
 
 ## Before importing products
 
