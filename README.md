@@ -2,7 +2,18 @@
 
 Custom sections for an electronics store on Salla (Raed theme), plus a demo product catalog.
 
-**Live preview:** `index.html` (home) and `collection.html` (category page, e.g. `collection.html#c1`), served by GitHub Pages. It runs the same custom code with a stand-in for the Salla SDK and 30 sample products. Prices are approximate and "add to cart" is a demo.
+**Live preview:** a full demo store that runs the same custom code with a stand-in for the Salla SDK and 30 sample products. Prices are approximate; orders are a demo (no payment, nothing is sent; cart, wishlist and orders stay in the browser).
+
+| Page | What it shows |
+|---|---|
+| `index.html` | Home: all custom sections (hero, flash sale, setup builder, quiz, compare, categories, offers…) |
+| `collection.html#c1` … `#c7`, `#offers`, `#all` | Category page: custom banner, filters, sorting, quick view, compare |
+| `product.html#p7001` … `#p7030` | Product page: buy box, specs, and the custom bundle, installments, trade-in and FAQ sections |
+| `cart.html` | Cart with quantities, coupon (`ISHARA10`), free-shipping meter |
+| `checkout.html` | Checkout: contact, address, shipping and payment choice, order confirmation |
+| `account.html`, `wishlist.html`, `info.html` | Orders with tracking, wishlist, store policies and contact |
+
+The preview shell lives in `assets/` (`shop.css`, `shop.js`, `products.js`) and `img/`. Only `salla-custom-code/` goes into Salla.
 
 ## Files
 
