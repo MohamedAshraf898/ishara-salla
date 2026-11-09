@@ -19,8 +19,8 @@
   var MEM = {};
   function load(k, d) { try { var v = localStorage.getItem(k); return v == null ? (k in MEM ? MEM[k] : d) : JSON.parse(v); } catch (e) { return k in MEM ? MEM[k] : d; } }
   function save(k, v) { MEM[k] = v; try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-  // share links: the start page with #showroom or #banner opens the phones category in that layout
-  if (PAGE === 'home' && (HASH === 'showroom' || HASH === 'banner')) { save('ish_coll_layout', HASH); location.replace('collection.html#c1'); return; }
+  // share links: #showroom opens phones in the showroom layout, #banner opens laptops in the banner layout
+  if (PAGE === 'home' && (HASH === 'showroom' || HASH === 'banner')) { save('ish_coll_layout', HASH); location.replace(HASH === 'showroom' ? 'collection.html#c1' : 'collection.html#c2'); return; }
 
   /* ---------- cart ---------- */
   var SHIP_FREE = 500, SHIP_STD = 25, SHIP_EXP = 45, COD_FEE = 15;
