@@ -125,7 +125,10 @@
       recentlyViewed: { enabled: true, title: 'شاهدتها مؤخراً', limit: 4 },
       // Heart button on the product cards of the custom sections (uses Salla's wishlist; asks guests to log in).
       wishlistHearts: true,
-      backToTop: true
+      backToTop: true,
+      // Cart drawer: the cart icon opens a side panel with the items, quantities, free-shipping progress and checkout.
+      // openOnAdd: open it after a product is added. trigger: extra elements that open it (links to the cart page always do).
+      cartDrawer: { enabled: true, openOnAdd: true, title: 'سلة المشتريات', trigger: 'salla-cart-summary, .s-cart-summary-wrapper', checkoutUrl: '' }
     }
   };
 
@@ -824,19 +827,130 @@
     var v = c && (c.sub_total != null ? c.sub_total : c.total);
     return num(v && v.amount != null ? v.amount : v);
   }
+  function meterHTML(amount) {
+    var c = CONFIG.shopping.freeShipping; if (!c || !c.enabled || !c.threshold || amount <= 0) return '';
+    var left = c.threshold - amount, pct = Math.max(0, Math.min(100, amount / c.threshold * 100));
+    return '<div class="ish-meter' + (left <= 0 ? ' is-done' : '') + '" role="status"><span>' + (left > 0 ? esc(c.text).replace('{left}', '<b>' + money(Math.ceil(left)) + '</b>') : esc(c.done)) + '</span>' +
+      '<i aria-hidden="true"><b style="width:' + pct + '%"></b></i></div>';
+  }
   function freeShipping() {
     var c = CONFIG.shopping.freeShipping; if (!c || !c.enabled || !c.threshold) return;
     var main = $('.app-inner > main') || $('main'); if (!main) return;
     var sec = section('ish-freeship', ''); main.insertBefore(sec, main.firstChild);
     var draw = function (amount) {
-      var left = c.threshold - amount, pct = Math.max(0, Math.min(100, amount / c.threshold * 100));
       if (amount <= 0) { sec.hidden = true; return; }
-      sec.hidden = false;
-      sec.firstChild.innerHTML = '<div class="ish-meter' + (left <= 0 ? ' is-done' : '') + '" role="status"><span>' + (left > 0 ? esc(c.text).replace('{left}', '<b>' + money(Math.ceil(left)) + '</b>') : esc(c.done)) + '</span>' +
-        '<i aria-hidden="true"><b style="width:' + pct + '%"></b></i></div>';
+      sec.hidden = false; sec.firstChild.innerHTML = meterHTML(amount);
     };
     try { salla.cart.details().then(function (r) { draw(cartAmount(r)); }).catch(warn); } catch (e) { warn(e); }
     try { salla.cart.event.onUpdated(function (r) { draw(cartAmount(r)); }); } catch (e) {}
+  }
+
+
+  /* ---------- cart drawer ---------- */
+  function cartDrawer() {
+    var c = CONFIG.shopping.cartDrawer; if (!c || !c.enabled || !window.salla || !salla.cart) return;
+    var slug = page().slug || '';
+    if (/^(cart|checkout)/.test(slug)) return;   // the cart page itself stays as it is
+    var u = function (k) { try { return salla.url.get(k); } catch (e) { return '/' + k; } };
+    var cartUrl = u('cart'), abs = function (h) { try { return new URL(h, location.href).href.split('#')[0]; } catch (e) { return h; } };
+    var ICON = {
+      cart: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.6L21.5 7H6"/></svg>',
+      bin: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>'
+    };
+    var root = document.createElement('div'); root.className = 'ish ish-drawer'; root.hidden = true;
+    root.innerHTML = '<div class="ish-drawer__bg" data-ish-close></div>' +
+      '<aside class="ish-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="ish-drawer-t">' +
+      '<div class="ish-drawer__head"><h2 id="ish-drawer-t">' + esc(c.title) + ' <span data-ish-dcount></span></h2><button type="button" class="ish-drawer__x" data-ish-close aria-label="إغلاق">×</button></div>' +
+      '<div class="ish-drawer__body" data-ish-dbody></div><div class="ish-drawer__foot" data-ish-dfoot></div></aside>';
+    document.body.appendChild(root);
+    var body = $('[data-ish-dbody]', root), foot = $('[data-ish-dfoot]', root), lastFocus = null, busy = false;
+
+    function val(v) { return num(v && v.amount != null ? v.amount : v); }
+    function items(r) {
+      var cart = r && (r.cart || (r.data && (r.data.cart || r.data)) || r) || {};
+      var list = (cart.items || []).map(function (it) {
+        var pr = it.product || {};
+        return {
+          id: it.id, pid: it.product_id || pr.id, qty: num(it.quantity) || 1,
+          name: it.product_name || it.name || pr.name || '',
+          img: it.product_image || it.image || it.thumbnail || imgOf(pr),
+          url: it.url || it.product_url || pr.url || '',
+          price: val(it.price != null ? it.price : (it.product_price != null ? it.product_price : pr.price)),
+          total: val(it.total != null ? it.total : null)
+        };
+      });
+      var count = num(cart.count) || list.reduce(function (a, x) { return a + x.qty; }, 0);
+      return { list: list, sub: cartAmount(r), count: count };
+    }
+    function render(d) {
+      $('[data-ish-dcount]', root).textContent = d.count ? '(' + d.count + ')' : '';
+      if (!d.count) {
+        body.innerHTML = '<div class="ish-drawer__empty">' + ICON.cart + '<b>سلتك فاضية</b><span>تصفّح الأقسام وأضف اللي يعجبك.</span><button type="button" class="ish-btn" data-ish-close>ابدأ التسوق</button></div>';
+        foot.innerHTML = ''; foot.hidden = true; return;
+      }
+      foot.hidden = false;
+      body.innerHTML = meterHTML(d.sub) + (d.list.length ? '<ul class="ish-drawer__list">' + d.list.map(function (x) {
+        return '<li class="ish-dline"><a class="ish-dline__img" href="' + esc(x.url || cartUrl) + '" tabindex="-1" aria-hidden="true">' + (x.img ? '<img src="' + esc(x.img) + '" alt="">' : '') + '</a>' +
+          '<div class="ish-dline__mid"><a class="ish-dline__name" href="' + esc(x.url || cartUrl) + '">' + esc(x.name) + '</a>' +
+          '<b>' + money(x.total || x.price * x.qty) + '</b>' +
+          '<div class="ish-dline__row"><div class="ish-qty" role="group" aria-label="الكمية"><button type="button" data-ish-q="' + x.id + '" data-v="' + (x.qty + 1) + '" aria-label="زيادة">+</button><span aria-live="polite">' + x.qty + '</span><button type="button" data-ish-q="' + x.id + '" data-v="' + (x.qty - 1) + '" aria-label="' + (x.qty > 1 ? 'إنقاص' : 'حذف') + '">−</button></div>' +
+          '<button type="button" class="ish-dline__del" data-ish-del="' + x.id + '" aria-label="حذف ' + esc(x.name) + '">' + ICON.bin + '</button></div></div></li>';
+      }).join('') + '</ul>' : '<p class="ish-drawer__note">في سلتك ' + nProducts(d.count) + '. افتح السلة لعرض التفاصيل.</p>');
+      foot.innerHTML = '<div class="ish-drawer__sum"><span>المجموع</span><b>' + money(d.sub) + '</b></div>' +
+        '<small>الشحن والضريبة تظهر في صفحة الدفع.</small>' +
+        '<a class="ish-btn" href="' + esc(c.checkoutUrl || cartUrl) + '">إتمام الطلب</a>' +
+        '<a class="ish-drawer__link" href="' + esc(cartUrl) + '">عرض السلة كاملة</a>';
+    }
+    function refresh() {
+      try { return salla.cart.details().then(function (r) { render(items(r)); }).catch(function (e) { warn(e); location.href = cartUrl; }); }
+      catch (e) { warn(e); location.href = cartUrl; return Promise.resolve(); }
+    }
+    function open() {
+      if (!root.hidden) { refresh(); return; }
+      lastFocus = document.activeElement;
+      body.innerHTML = '<div class="ish-drawer__load" aria-label="جاري التحميل"></div>';
+      root.hidden = false; document.documentElement.classList.add('ish-noscroll');
+      void root.offsetWidth; root.classList.add('on');   // start the slide-in (no rAF: it stalls in background tabs)
+      $('.ish-drawer__x', root).focus();
+      refresh();
+    }
+    function close() {
+      if (root.hidden) return;
+      root.classList.remove('on'); document.documentElement.classList.remove('ish-noscroll');
+      setTimeout(function () { root.hidden = true; }, 250);
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    function act(p) {
+      if (busy || !p || typeof p.then !== 'function') return;
+      busy = true; root.classList.add('is-busy');
+      p.catch(warn).then(refresh).then(function () { busy = false; root.classList.remove('is-busy'); });
+    }
+    root.addEventListener('click', function (e) {
+      if (e.target.closest('[data-ish-close]')) { close(); return; }
+      var q = e.target.closest('[data-ish-q]');
+      if (q) { var n = +q.getAttribute('data-v'), id = q.getAttribute('data-ish-q'); act(n > 0 ? salla.cart.updateItem({ id: id, quantity: n }) : salla.cart.deleteItem(id)); return; }
+      var d = e.target.closest('[data-ish-del]'); if (d) act(salla.cart.deleteItem(d.getAttribute('data-ish-del')));
+    });
+    document.addEventListener('keydown', function (e) {
+      if (root.hidden) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'Tab') {   // keep focus inside the drawer
+        var f = $$('a[href],button:not([disabled])', root).filter(function (x) { return x.offsetParent; });
+        if (!f.length) return;
+        if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+      }
+    });
+    // the cart icon (and any link to the cart page) opens the drawer
+    document.addEventListener('click', function (e) {
+      if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || root.contains(e.target)) return;
+      var t = (c.trigger && e.target.closest(c.trigger)) || e.target.closest('a[href]');
+      if (!t) return;
+      if (t.tagName === 'A' && !(c.trigger && t.matches(c.trigger)) && abs(t.getAttribute('href')) !== abs(cartUrl)) return;
+      e.preventDefault(); e.stopPropagation(); open();
+    }, true);
+    try { if (c.openOnAdd && salla.cart.event.onItemAdded) salla.cart.event.onItemAdded(function () { open(); }); } catch (e) {}
+    try { salla.cart.event.onUpdated(function () { if (!root.hidden && !busy) refresh(); }); } catch (e) {}
   }
 
   function stickyBar(cur) {
@@ -1016,6 +1130,7 @@
     if (slug === 'cart' || document.body.classList.contains('cart')) freeShipping();
     backToTop();
     mobileBar();
+    cartDrawer();
   }
   if (window.salla && typeof salla.onReady === 'function') salla.onReady(start);
   else document.addEventListener('DOMContentLoaded', function () { (window.salla && salla.onReady) ? salla.onReady(start) : start(); });

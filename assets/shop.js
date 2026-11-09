@@ -34,6 +34,12 @@
     if (l) l.qty = Math.min(10, l.qty + (q || 1)); else c.push({ id: +id, qty: Math.min(10, q || 1) });
     setCart(c);
   }
+  // after an add: the custom code's cart drawer opens if it listens, otherwise a toast
+  var addedFns = [];
+  function added(p, n) {
+    if (addedFns.length) { addedFns.forEach(function (f) { try { f({ product: p }); } catch (e) {} }); return; }
+    say('أُضيف للسلة: ' + (p ? p.name : 'منتج') + (n > 1 ? ' × ' + n : ''), ['عرض السلة', 'cart.html']);
+  }
   function cartSet(id, q) { setCart(cart().map(function (l) { if (l.id == id) l.qty = Math.max(0, Math.min(10, q)); return l; }).filter(function (l) { return l.qty > 0; })); }
   function totals(lines, ship, pay) {
     var sub = 0, was = 0;
@@ -117,9 +123,17 @@
     url: { get: function (p) { return URLS[p] || 'index.html'; } },
     notify: { info: function (m) { say(m); } },
     cart: {
-      addItem: function (o) { cartAdd(o.id, o.quantity || 1); var p = BY[o.id]; say('أُضيف للسلة: ' + (p ? p.name : 'منتج'), ['عرض السلة', 'cart.html']); return Promise.resolve({ data: { count: cartCount() } }); },
-      details: function () { return Promise.resolve({ data: { cart: { sub_total: totals(cart()).sub, count: cartCount() } } }); },
-      event: { onUpdated: function (f) { cartFns.push(function () { f({ cart: { sub_total: totals(cart()).sub, count: cartCount() } }); }); } }
+      addItem: function (o) { cartAdd(o.id, o.quantity || 1); added(BY[o.id], o.quantity || 1); return Promise.resolve({ data: { count: cartCount() } }); },
+      details: function () {
+        var items = cart().map(function (l) { var p = BY[l.id]; return { id: l.id, product_id: l.id, name: p.name, product_image: p.image.url, url: p.url, price: p.price, total: p.price * l.qty, quantity: l.qty }; });
+        return Promise.resolve({ data: { cart: { items: items, sub_total: totals(cart()).sub, count: cartCount() } } });
+      },
+      updateItem: function (o) { cartSet(o.id, +o.quantity); return Promise.resolve({}); },
+      deleteItem: function (id) { cartSet(id, 0); return Promise.resolve({}); },
+      event: {
+        onUpdated: function (f) { cartFns.push(function () { f({ cart: { sub_total: totals(cart()).sub, count: cartCount() } }); }); },
+        onItemAdded: function (f) { addedFns.push(f); }
+      }
     },
     product: { event: { onPriceUpdated: function () {} } },
     wishlist: {
@@ -219,7 +233,7 @@
       '</div>';
     var q = $('#qty');
     root.addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (b) q.value = Math.max(1, Math.min(10, (+q.value || 1) + +b.getAttribute('data-q'))); });
-    var add = function () { var n = Math.max(1, Math.min(10, +q.value || 1)); cartAdd(p.id, n); say('أُضيف للسلة: ' + p.name + (n > 1 ? ' × ' + n : ''), ['عرض السلة', 'cart.html']); };
+    var add = function () { var n = Math.max(1, Math.min(10, +q.value || 1)); cartAdd(p.id, n); added(p, n); };
     $('#addBtn').addEventListener('click', add);
     $('#buyBtn').addEventListener('click', function () { cartAdd(p.id, Math.max(1, Math.min(10, +q.value || 1))); location.href = 'checkout.html'; });
     var z = $('#zoom');

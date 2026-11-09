@@ -33,6 +33,12 @@ free-shipping progress bar on the cart page (set `threshold` to match your Salla
 a sticky buy bar on product pages that presses the theme's own add-to-cart button,
 recently viewed products, wishlist hearts on the custom sections' cards, and a back-to-top button.
 
+## Cart drawer
+
+The cart icon in the header (and any link to the cart page, such as the cart button in the mobile bar) opens a side panel instead of leaving the page. It shows the items with photo, price, a quantity stepper and a delete button, the free-shipping progress bar, the subtotal, and buttons for checkout and the full cart page. It also opens by itself after a product is added to the cart.
+
+It uses Salla's own cart (`salla.cart.details`, `updateItem`, `deleteItem` and the cart events), so it always matches the real cart. It's not shown on the cart and checkout pages. Settings are in `CONFIG.shopping.cartDrawer`: turn it off, stop it opening after an add (`openOnAdd: false`), change the title, or point the checkout button somewhere else (`checkoutUrl`; empty means the cart page, where Salla's checkout starts).
+
 ## Category page
 
 The category page (`product.index`) comes in two layouts. Pick one in `CONFIG.collection.layout`, or set a different layout for some categories in `CONFIG.collection.layouts` (by category id, for example `{ 123456: 'showroom' }`).
