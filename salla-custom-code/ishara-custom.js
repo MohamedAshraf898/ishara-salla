@@ -97,7 +97,20 @@
 
     // Category (collection) pages: banner with the category name, live stats from your products,
     // a few product photos and quick links to the other categories.
-    collection: { enabled: true, eyebrow: 'تسوّق حسب القسم', text: 'منتجات أصلية، توصيل سريع، وتقسيط بدون فوائد.', chips: true, photos: true },
+    collection: {
+      enabled: true, eyebrow: 'تسوّق حسب القسم', text: 'منتجات أصلية، توصيل سريع، وتقسيط بدون فوائد.', chips: true, photos: true,
+      // Page layout: 'banner' (dark banner with photos) or 'showroom' (light header, picks of the category,
+      // grid/list switch for the theme's product list, and tiles to the other categories).
+      layout: 'banner',
+      // Different layout for some categories only, by category id: { 123456: 'showroom' }
+      layouts: {},
+      showroom: {
+        spotlight: true, spotlightTitle: 'مختارات القسم',
+        viewSwitch: true,      // grid / list buttons above the theme's product list
+        moreCats: true, moreTitle: 'تسوّق أقسام أخرى',
+        list: 'salla-products-list, .s-products-list'   // the theme's product list on category pages
+      }
+    },
 
     mobileBar: { enabled: true },
 
@@ -873,7 +886,10 @@
     var c = CONFIG.collection; if (!c || !c.enabled) return;
     var pg = page(), id = +pg.id || catIdFromUrl(location.href);
     var main = $('.app-inner > main') || $('main'); if (!main) return;
-    var sec = section('ish-coll', ''); main.insertBefore(sec, main.firstChild);
+    var lay = window.ISHARA_COLLECTION_LAYOUT || (c.layouts && id && c.layouts[id]) || c.layout || 'banner';
+    var show = lay === 'showroom';
+    if (show) document.body.classList.add('ish-layout-showroom');
+    var sec = section(show ? 'ish-show' : 'ish-coll', ''); main.insertBefore(sec, main.firstChild);
     Promise.all([getCats(), id ? fetchProducts({ source: 'categories', source_value: [id], limit: 50 }) : Promise.resolve([])]).then(function (r) {
       var cats = r[0], list = r[1];
       var cur = cats.filter(function (x) { return catId(x) === id; })[0];
@@ -885,18 +901,94 @@
       if (list.length) stats.push([list.length >= 50 ? '+50' : String(list.length), 'عدد المنتجات']);
       if (prices.length) stats.push([money(Math.min.apply(null, prices)), 'يبدأ من']);
       if (offers) stats.push([String(offers), offers === 1 ? 'منتج عليه خصم' : 'منتجات عليها خصم']);
-      var pics = c.photos ? list.map(imgOf).filter(Boolean).slice(0, 3) : [];
-      var chips = c.chips && cats.length > 1 ? '<nav class="ish-coll__chips" aria-label="الأقسام">' + cats.slice(0, 10).map(function (x) {
-        var on = catId(x) === id;
-        return '<a href="' + esc(x.url) + '"' + (on ? ' aria-current="page"' : '') + '>' + esc(x.name) + '</a>';
-      }).join('') + '</nav>' : '';
-      sec.firstChild.innerHTML = '<div class="ish-coll__band"><div class="ish-coll__txt">' +
-        (c.eyebrow ? '<span class="ish-pill">' + esc(c.eyebrow) + '</span>' : '') +
-        '<h1>' + esc(name) + '</h1>' + (c.text ? '<p>' + esc(c.text) + '</p>' : '') +
-        (stats.length ? '<dl class="ish-coll__stats">' + stats.map(function (x) { return '<div><dt>' + esc(x[1]) + '</dt><dd>' + x[0] + '</dd></div>'; }).join('') + '</dl>' : '') +
-        '</div>' + (pics.length ? '<div class="ish-coll__pics ish-n' + pics.length + '">' + pics.map(function (u) { return '<span><img src="' + esc(u) + '" alt="" loading="lazy"></span>'; }).join('') + '</div>' : '') +
-        '</div>' + chips;
+      var data = { id: id, name: name, cats: cats, list: list, stats: stats };
+      if (show) showroom(sec, main, data); else collectionBanner(sec, data);
     });
+  }
+
+  function catChips(cls, cats, id) {
+    return '<nav class="' + cls + '" aria-label="الأقسام">' + cats.slice(0, 10).map(function (x) {
+      return '<a href="' + esc(x.url) + '"' + (catId(x) === id ? ' aria-current="page"' : '') + '>' + esc(x.name) + '</a>';
+    }).join('') + '</nav>';
+  }
+
+  /* layout 1: dark banner */
+  function collectionBanner(sec, d) {
+    var c = CONFIG.collection;
+    var pics = c.photos ? d.list.map(imgOf).filter(Boolean).slice(0, 3) : [];
+    sec.firstChild.innerHTML = '<div class="ish-coll__band"><div class="ish-coll__txt">' +
+      (c.eyebrow ? '<span class="ish-pill">' + esc(c.eyebrow) + '</span>' : '') +
+      '<h1>' + esc(d.name) + '</h1>' + (c.text ? '<p>' + esc(c.text) + '</p>' : '') +
+      (d.stats.length ? '<dl class="ish-coll__stats">' + d.stats.map(function (x) { return '<div><dt>' + esc(x[1]) + '</dt><dd>' + x[0] + '</dd></div>'; }).join('') + '</dl>' : '') +
+      '</div>' + (pics.length ? '<div class="ish-coll__pics ish-n' + pics.length + '">' + pics.map(function (u) { return '<span><img src="' + esc(u) + '" alt="" loading="lazy"></span>'; }).join('') + '</div>' : '') +
+      '</div>' + (c.chips && d.cats.length > 1 ? catChips('ish-coll__chips', d.cats, d.id) : '');
+  }
+
+  /* layout 2: showroom */
+  function spot(p, label, big) {
+    var dc = discount(p);
+    return '<article class="ish-spot' + (big ? ' ish-spot--big' : '') + '">' +
+      '<a class="ish-spot__img" href="' + esc(p.url) + '" tabindex="-1" aria-hidden="true"><img src="' + esc(imgOf(p)) + '" alt="" loading="lazy"></a>' +
+      wishBtn(p.id) +
+      '<div class="ish-spot__txt"><span class="ish-spot__label">' + esc(label) + (dc ? ' · خصم ' + dc + '%' : '') + '</span>' +
+      '<a class="ish-spot__name" href="' + esc(p.url) + '">' + esc(p.name) + '</a>' +
+      '<div class="ish-price"><b>' + money(p.price) + '</b>' + (dc ? '<s>' + money(p.regular_price) + '</s>' : '') + '</div>' +
+      '<button type="button" class="ish-btn' + (big ? '' : ' ish-btn--ghost') + '" data-ish-add="' + p.id + '">' + (p.has_options ? 'اختر الخيارات' : 'أضف للسلة') + '</button></div></article>';
+  }
+  function showroom(sec, main, d) {
+    var c = CONFIG.collection, o = c.showroom || {};
+    var html = '<header class="ish-show__head"><div class="ish-show__title">' +
+      (c.eyebrow ? '<span class="ish-eyebrow">' + esc(c.eyebrow) + '</span>' : '') +
+      '<h1>' + esc(d.name) + '</h1>' + (c.text ? '<p>' + esc(c.text) + '</p>' : '') + '</div>' +
+      (d.stats.length ? '<dl class="ish-show__facts">' + d.stats.map(function (x) { return '<div><dd>' + x[0] + '</dd><dt>' + esc(x[1]) + '</dt></div>'; }).join('') + '</dl>' : '') +
+      '</header>' + (c.chips && d.cats.length > 1 ? catChips('ish-show__tabs', d.cats, d.id) : '');
+
+    // picks: biggest discount, then lowest price, then the newest that's left
+    var pool = d.list.filter(function (p) { return p && p.name && imgOf(p); });
+    if (o.spotlight && pool.length >= 3) {
+      var used = {}, take = function (arr) { var p = arr.filter(function (x) { return !used[x.id]; })[0]; if (p) used[p.id] = 1; return p; };
+      var byOff = pool.slice().sort(function (a, b) { return discount(b) - discount(a); });
+      var byLow = pool.slice().sort(function (a, b) { return num(a.price) - num(b.price); });
+      var a = take(byOff), b = take(byLow), n = take(pool);
+      html += '<div class="ish-show__picks">' + head('', o.spotlightTitle || '') + '<div class="ish-show__bento">' +
+        spot(a, discount(a) ? 'أعلى خصم' : 'الأكثر طلباً', true) + spot(b, 'الأقل سعراً') + spot(n, 'وصل حديثاً') + '</div></div>';
+    }
+    sec.firstChild.innerHTML = html;
+
+    // grid / list switch above the theme's own product list (filters, sorting and paging stay the theme's)
+    var listEl = o.list && $(o.list, main);
+    if (o.viewSwitch && listEl) {
+      var KEY = 'ish_view', v = local(KEY) === 'list' ? 'list' : 'grid';
+      var bar = document.createElement('div'); bar.className = 'ish ish-viewbar';
+      bar.innerHTML = '<span>طريقة العرض</span><div role="group" aria-label="طريقة العرض">' +
+        '<button type="button" data-ish-view="grid" aria-label="شبكة"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>شبكة</button>' +
+        '<button type="button" data-ish-view="list" aria-label="قائمة"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><path d="M13 6h7M13 9h4M13 16h7M13 19h4"/></svg>قائمة</button></div>';
+      listEl.parentNode.insertBefore(bar, listEl);
+      var set = function (x) {
+        v = x; local(KEY, x); document.body.classList.toggle('ish-view-list', x === 'list');
+        $$('[data-ish-view]', bar).forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-ish-view') === x); });
+      };
+      bar.addEventListener('click', function (e) { var b = e.target.closest('[data-ish-view]'); if (b) set(b.getAttribute('data-ish-view')); });
+      set(v);
+    }
+
+    // tiles to the other categories, at the end of the page
+    var others = d.cats.filter(function (x) { return catId(x) !== d.id; }).slice(0, 8);
+    if (o.moreCats && others.length) {
+      var more = section('ish-show__more', head('', o.moreTitle || '') + '<div class="ish-show__tiles">' + others.map(function (x) {
+        return '<a class="ish-ctile" href="' + esc(x.url) + '">' + (x.image ? '<img src="' + esc(x.image) + '" alt="" loading="lazy">' : '<i aria-hidden="true">' + letter(x.name) + '</i>') + '<span>' + esc(x.name) + '</span></a>';
+      }).join('') + '</div>');
+      main.appendChild(more);
+      if (others.length % 3 === 0 || others.length < 4) more.querySelector('.ish-show__tiles').classList.add('ish-cols3');
+      // categories without their own image get a photo of one of their products
+      others.forEach(function (x, k) {
+        var cid = catId(x); if (x.image || !cid) return;
+        fetchProducts({ source: 'categories', source_value: [cid], limit: 1 }).then(function (ps) {
+          var u = ps[0] && imgOf(ps[0]), t = $$('.ish-ctile', more)[k]; if (!u || !t) return;
+          var im = new Image(); im.src = u; im.alt = ''; im.loading = 'lazy'; var ph = t.querySelector('i'); if (ph) ph.remove(); t.insertBefore(im, t.firstChild);
+        });
+      });
+    }
   }
 
   /* ===================== 7) START ===================== */

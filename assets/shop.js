@@ -91,6 +91,8 @@
   var cat = /^c\d+$/.test(HASH) ? +HASH.slice(1) : null;
   var pid = /^p\d+$/.test(HASH) ? +HASH.slice(1) : null;
   if (PAGE === 'collection') cfgPage = { slug: 'product.index', id: cat };
+  // preview only: which category layout the custom code shows (the live store uses CONFIG.collection.layout)
+  if (PAGE === 'collection') window.ISHARA_COLLECTION_LAYOUT = load('ish_coll_layout', 'showroom') === 'banner' ? 'banner' : 'showroom';
   if (PAGE === 'product' && BY[pid]) cfgPage = { slug: 'product.single', id: pid, parent: { url: 'store/c' + BY[pid].cat } };
   if (PAGE === 'cart') cfgPage = { slug: 'cart' };
   if (PAGE === 'checkout') cfgPage = { slug: 'checkout' };
@@ -162,6 +164,10 @@
   }
 
   function collection() {
+    $$('[data-lay]').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-lay') === window.ISHARA_COLLECTION_LAYOUT);
+      b.addEventListener('click', function () { save('ish_coll_layout', b.getAttribute('data-lay')); location.reload(); });
+    });
     var offersOnly = HASH === 'offers';
     var base = P.filter(function (p) { return cat ? p.cat === cat : (offersOnly ? p.is_on_sale : true); });
     var c = CATS.filter(function (x) { return x.id === cat; })[0];

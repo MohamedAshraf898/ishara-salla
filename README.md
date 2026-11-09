@@ -7,7 +7,7 @@ Custom sections for an electronics store on Salla (Raed theme), plus a demo prod
 | Page | What it shows |
 |---|---|
 | `index.html` | Home: all custom sections (hero, flash sale, setup builder, quiz, compare, categories, offers…) |
-| `collection.html#c1` … `#c7`, `#offers`, `#all` | Category page: custom banner, filters, sorting, quick view, compare |
+| `collection.html#c1` … `#c7`, `#offers`, `#all` | Category page in two layouts (showroom and banner), filters, sorting, quick view, compare |
 | `product.html#p7001` … `#p7030` | Product page: buy box, specs, and the custom bundle, installments, trade-in and FAQ sections |
 | `cart.html` | Cart with quantities, coupon (`ISHARA10`), free-shipping meter |
 | `checkout.html` | Checkout: contact, address, shipping and payment choice, order confirmation |
@@ -35,7 +35,12 @@ recently viewed products, wishlist hearts on the custom sections' cards, and a b
 
 ## Category page
 
-On category pages (`product.index`) the JS adds a banner at the top: the category name, live stats (product count, lowest price, how many are on sale), a few product photos, and quick links to the other categories. Turn it off or change the text in `CONFIG.collection`.
+The category page (`product.index`) comes in two layouts. Pick one in `CONFIG.collection.layout`, or set a different layout for some categories in `CONFIG.collection.layouts` (by category id, for example `{ 123456: 'showroom' }`).
+
+- **`banner`** (default): a dark banner with the category name, live stats (product count, lowest price, how many are on sale), a few product photos, and quick links to the other categories.
+- **`showroom`**: a light editorial header with a large title and a stats strip, the categories as underlined tabs, "مختارات القسم" (the product with the biggest discount, the cheapest one and a newer one, each with add to cart and a wishlist heart), a grid / list switch above the theme's product list, softer product cards, and photo tiles linking to the other categories at the end of the page.
+
+Both layouts only add sections around the theme's own product list. Raed's filters, sorting, paging and product links keep working. The list view is remembered in the visitor's browser. In the preview, use the "تصميم صفحة القسم" buttons on the category page to switch between the two.
 
 ## Before importing products
 

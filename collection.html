@@ -23,6 +23,7 @@
 </header>
 <div class="app-inner"><main>
 <nav class="crumbs gut" aria-label="مسار التنقل"><a href="index.html">الرئيسية</a><span aria-hidden="true">‹</span><b id="crumb">كل المنتجات</b></nav>
+<div class="laysw gut" role="group" aria-label="تصميم صفحة القسم"><span>تصميم صفحة القسم:</span><button type="button" data-lay="showroom">المعرض</button><button type="button" data-lay="banner">البانر</button></div>
 <div class="listing gut">
   <aside class="filters" id="filters" aria-label="تصفية المنتجات">
     <h2>تصفية <button type="button" class="linkbtn" id="clearAll">مسح الكل</button></h2>
@@ -33,7 +34,7 @@
   <section aria-labelledby="crumb" style="min-width:0">
     <div class="toolbar"><b id="count"></b><div style="display:flex;gap:8px;align-items:center"><button type="button" class="btn btn--ghost ftoggle" id="ftoggle" aria-controls="filters" aria-expanded="false">تصفية</button>
       <label for="sort" class="muted" style="font-size:13px">ترتيب</label><select id="sort"><option value="new">الأحدث</option><option value="low">السعر: من الأقل</option><option value="high">السعر: من الأعلى</option><option value="off">أعلى خصم</option></select></div></div>
-    <div class="rgrid lgrid" id="grid"></div>
+    <salla-products-list class="rgrid lgrid" id="grid"></salla-products-list>
     <div class="empty" id="none" hidden><b>لا توجد منتجات تطابق اختيارك</b><span>جرّب تغيير الفلاتر أو مسحها.</span><button type="button" class="btn btn--ghost" id="clear2">مسح الفلاتر</button></div>
   </section>
 </div>

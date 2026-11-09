@@ -286,3 +286,9 @@ footer{background:var(--shell-ink);color:#C9D1E0;font-size:14px;margin-top:24px}
   .pp-perks{grid-template-columns:1fr 1fr 1fr}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* preview-only switch between the two category layouts */
+salla-products-list{display:grid}
+.laysw{max-width:1200px;margin:12px auto 0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--shell-muted)}
+.laysw button{border:1px solid var(--shell-line);background:var(--shell-bg);color:inherit;font:inherit;font-weight:700;border-radius:999px;padding:5px 14px;cursor:pointer}
+.laysw button[aria-pressed="true"]{background:var(--color-primary);border-color:var(--color-primary);color:#fff}
