@@ -33,6 +33,17 @@ free-shipping progress bar on the cart page (set `threshold` to match your Salla
 a sticky buy bar on product pages that presses the theme's own add-to-cart button,
 recently viewed products, wishlist hearts on the custom sections' cards, and a back-to-top button.
 
+## Product page layouts
+
+The product page comes in two layouts. Pick one in `CONFIG.product.layout`, or set a layout for the products of some categories in `CONFIG.product.layouts` (by category id, for example `{ 123456: 'studio' }`).
+
+- **`classic`** (default): Raed's own product page.
+- **`studio`**: the name, rating and price move to a header across the top with perks chips (delivery, warranty, returns). Under it, a large photo gallery with a thumbnail rail, swipe on phones, a photo counter and a full-screen viewer, and the full description in an "عن المنتج" panel. On the other side, a sticky buy card holds the theme's own form.
+
+The studio layout never moves or rebuilds Raed's form: options, the live price, quantity, add to cart, installments and quick order are the theme's own and keep working. It only moves the static title, top price and description, and builds the gallery from the slider's own image list. The theme slider stays on the page (hidden), and when an option with its own photo is picked, the gallery follows it. Products with a video or 3D image keep Raed's slider. If Raed's class names ever change, set them in `CONFIG.product.studio` (`row`, `gallery`, `slider`, `info`); if they aren't found the theme's page shows unchanged.
+
+In the preview, phone products use the studio layout and the other categories the classic one. Products in the preview have a priced warranty option to show the price updating, and two close-up photos cut from the product photo.
+
 ## Cart drawer
 
 The cart icon in the header (and any link to the cart page, such as the cart button in the mobile bar) opens a side panel instead of leaving the page. It shows the items with photo, price, a quantity stepper and a delete button, the free-shipping progress bar, the subtotal, and buttons for checkout and the full cart page. It also opens by itself after a product is added to the cart.

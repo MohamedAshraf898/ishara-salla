@@ -29,9 +29,12 @@
   function cart() { return load('ish_cart', []).filter(function (l) { return BY[l.id] && l.qty > 0; }); }
   function setCart(c) { save('ish_cart', c); paintCounts(); cartFns.forEach(function (f) { try { f(c); } catch (e) {} }); }
   function cartCount() { return cart().reduce(function (a, l) { return a + l.qty; }, 0); }
-  function cartAdd(id, q) {
-    var c = cart(), l = c.filter(function (x) { return x.id == id; })[0];
-    if (l) l.qty = Math.min(10, l.qty + (q || 1)); else c.push({ id: +id, qty: Math.min(10, q || 1) });
+  function lkey(l) { return l.id + (l.o ? '|' + l.o : ''); }
+  function unit(l) { return BY[l.id].price + (l.x || 0); }
+  function cartAdd(id, q, opt) {
+    var o = (opt && opt.o) || '', c = cart(), l = c.filter(function (x) { return x.id == id && (x.o || '') === o; })[0];
+    if (l) l.qty = Math.min(10, l.qty + (q || 1));
+    else { l = { id: +id, qty: Math.min(10, q || 1) }; if (o) { l.o = o; l.x = +opt.x || 0; } c.push(l); }
     setCart(c);
   }
   // after an add: the custom code's cart drawer opens if it listens, otherwise a toast
@@ -40,10 +43,10 @@
     if (addedFns.length) { addedFns.forEach(function (f) { try { f({ product: p }); } catch (e) {} }); return; }
     say('أُضيف للسلة: ' + (p ? p.name : 'منتج') + (n > 1 ? ' × ' + n : ''), ['عرض السلة', 'cart.html']);
   }
-  function cartSet(id, q) { setCart(cart().map(function (l) { if (l.id == id) l.qty = Math.max(0, Math.min(10, q)); return l; }).filter(function (l) { return l.qty > 0; })); }
+  function cartSet(id, q) { setCart(cart().map(function (l) { if (lkey(l) === String(id)) l.qty = Math.max(0, Math.min(10, q)); return l; }).filter(function (l) { return l.qty > 0; })); }
   function totals(lines, ship, pay) {
     var sub = 0, was = 0;
-    lines.forEach(function (l) { var p = BY[l.id]; sub += p.price * l.qty; was += p.regular_price * l.qty; });
+    lines.forEach(function (l) { var p = BY[l.id]; sub += unit(l) * l.qty; was += (p.regular_price + (l.x || 0)) * l.qty; });
     var code = load('ish_coupon', ''), cp = COUPONS[code], disc = 0;
     if (cp && (!cp.min || sub >= cp.min)) disc = cp.pct ? Math.round(sub * cp.pct) / 100 : cp.amount; else code = '';
     var shipping = !lines.length ? 0 : ship === 'express' ? SHIP_EXP : (sub - disc >= SHIP_FREE ? 0 : SHIP_STD);
@@ -105,6 +108,9 @@
   if (PAGE === 'collection') window.ISHARA_COLLECTION_LAYOUT = LAYOUTS[cat] || 'showroom';
   if (PAGE === 'product' && BY[pid]) cfgPage = { slug: 'product.single', id: pid, parent: { url: 'store/c' + BY[pid].cat } };
   if (PAGE === 'cart') cfgPage = { slug: 'cart' };
+  // preview only: phones use the studio product page, every other category the theme's classic one
+  // (on the live store this is CONFIG.product.layout / CONFIG.product.layouts)
+  if (PAGE === 'product' && BY[pid]) window.ISHARA_PRODUCT_LAYOUT = BY[pid].cat === 1 ? 'studio' : 'classic';
   if (PAGE === 'checkout') cfgPage = { slug: 'checkout' };
   if (PAGE === 'wishlist') cfgPage = { slug: 'customer.wishlist' };
   if (PAGE === 'account') cfgPage = { slug: 'customer.orders.index' };
@@ -125,7 +131,7 @@
     cart: {
       addItem: function (o) { cartAdd(o.id, o.quantity || 1); added(BY[o.id], o.quantity || 1); return Promise.resolve({ data: { count: cartCount() } }); },
       details: function () {
-        var items = cart().map(function (l) { var p = BY[l.id]; return { id: l.id, product_id: l.id, name: p.name, product_image: p.image.url, url: p.url, price: p.price, total: p.price * l.qty, quantity: l.qty }; });
+        var items = cart().map(function (l) { var p = BY[l.id]; return { id: lkey(l), product_id: l.id, name: p.name + (l.o ? ' — ' + l.o : ''), product_image: p.image.url, url: p.url, price: unit(l), total: unit(l) * l.qty, quantity: l.qty }; });
         return Promise.resolve({ data: { cart: { items: items, sub_total: totals(cart()).sub, count: cartCount() } } });
       },
       updateItem: function (o) { cartSet(o.id, +o.quantity); return Promise.resolve({}); },
@@ -209,37 +215,71 @@
     draw();
   }
 
+  function warranty(p) {   // a priced option, like a Salla product option
+    if ([1, 2, 3, 5, 6].indexOf(p.cat) < 0) return null;
+    var y1 = Math.max(49, Math.round(p.price * 0.06 / 10) * 10), y2 = Math.round(y1 * 1.8 / 10) * 10 - 1;
+    return { name: 'الضمان', values: [['ضمان الوكيل سنتين', 0, 'مشمول'], ['ضمان ممتد + سنة', y1], ['ضمان ممتد + سنتين', y2]] };
+  }
   function product() {
     var p = BY[pid], root = $('#pp');
     if (!p) { root.outerHTML = '<div class="wrap gut" style="padding-block:40px">' + empty('box', 'المنتج غير موجود', 'ربما تغيّر الرابط. تصفّح المنتجات من الأقسام.', ['كل المنتجات', 'collection.html#all']) + '</div>'; return; }
     document.title = p.name + ' | إشارة';
-    var c = CATS.filter(function (x) { return x.id === p.cat; })[0], d = off(p);
+    root.id = 'product-' + p.id;
+    var c = CATS.filter(function (x) { return x.id === p.cat; })[0], d = off(p), imgs = p.images || [p.image], opt = warranty(p);
     $('#crumbs').innerHTML = '<a href="index.html">الرئيسية</a><span aria-hidden="true">‹</span><a href="collection.html#c' + p.cat + '">' + esc(c.name) + '</a><span aria-hidden="true">‹</span><span>' + esc(p.name) + '</span>';
     var specs = String(p.description).split(/[،.]\s*/).map(function (s) { return s.trim(); }).filter(Boolean);
     var stock = p.qty <= 5 ? '<span class="pill pill--sale">باقي ' + p.qty + ' فقط</span>' : '<span class="pill pill--ok">متوفر</span>';
     root.innerHTML =
-      '<div class="pp-gal"><div class="pp-main" id="zoom" role="img" aria-label="' + esc(p.name) + '"><img src="' + p.image.url + '" alt="' + esc(p.name) + '">' + (d ? '<span class="rc-badge" style="top:16px;right:16px;font-size:13px">خصم ' + d + '%</span>' : '') + '</div></div>' +
-      '<div class="pp-info">' +
+      '<div class="sidebar pp-gal"><salla-slider class="details-slider" data-images=\'' + esc(JSON.stringify(imgs)) + '\'>' +
+        imgs.map(function (x, i) { return '<div class="swiper-slide magnify-wrapper pp-main' + (i ? '' : ' swiper-slide-active') + '"' + (i ? ' hidden' : '') + ' role="img" aria-label="' + esc(x.alt || p.name) + '"><img src="' + x.url + '" alt="' + esc(x.alt || p.name) + '">' + (d && !i ? '<span class="rc-badge" style="top:16px;right:16px;font-size:13px">خصم ' + d + '%</span>' : '') + '</div>'; }).join('') +
+        (imgs.length > 1 ? '<div class="pp-thumbs">' + imgs.map(function (x, i) { return '<button type="button" class="slide--one-fourth" data-th="' + i + '" aria-label="الصورة ' + (i + 1) + '"' + (i ? '' : ' aria-current="true"') + '><img src="' + x.url + '" alt=""></button>'; }).join('') + '</div>' : '') +
+      '</salla-slider></div>' +
+      '<div class="main-content pp-info">' +
         '<div class="pp-meta"><span class="rc-brand" style="font-size:12px">' + esc(p.brand) + '</span>' + stock + (p.promo ? '<span class="pill">' + esc(p.promo) + '</span>' : '') + '</div>' +
-        '<h1>' + esc(p.name) + '</h1>' +
-        '<div class="pp-price"><b>' + fmt(p.price) + '</b>' + (d ? '<s>' + fmt(p.regular_price) + '</s><span class="pill pill--sale">وفّر ' + fmt(p.regular_price - p.price) + '</span>' : '') + '</div>' +
-        '<span class="muted" style="font-size:13px;margin-top:-10px">السعر شامل ضريبة القيمة المضافة</span>' +
-        '<div class="pp-inst"><span><span class="tag tag--tabby">tabby</span> قسّمها على 4 دفعات: <b class="num">' + fmt(Math.round(p.price / 4 * 100) / 100) + '</b> بدون فوائد</span><span><span class="tag tag--tamara">tamara</span> أو على 3 دفعات: <b class="num">' + fmt(Math.round(p.price / 3 * 100) / 100) + '</b></span></div>' +
-        '<div class="pp-buy"><div class="qty" role="group" aria-label="الكمية"><button type="button" data-q="1" aria-label="زيادة">+</button><input id="qty" type="number" min="1" max="10" value="1" aria-label="الكمية" inputmode="numeric"><button type="button" data-q="-1" aria-label="إنقاص">−</button></div>' +
+        '<h1 data-testid="store-product-title">' + esc(p.name) + '</h1>' +
+        '<small class="color-grey muted" style="font-size:13px">السعر شامل ضريبة القيمة المضافة</small>' +
+        '<div data-testid="store-product-price" class="pp-price"><b>' + fmt(p.price) + '</b>' + (d ? '<s>' + fmt(p.regular_price) + '</s><span class="pill pill--sale">وفّر ' + fmt(p.regular_price - p.price) + '</span>' : '') + '</div>' +
+        '<div class="product__description box"><h2 class="pp-desc-t">أبرز المواصفات</h2><article class="article--main"><ul class="pp-specs">' + specs.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul></article></div>' +
+        '<salla-installment class="pp-inst"></salla-installment>' +
+        '<form class="form product-form" novalidate>' +
+          (opt ? '<fieldset class="pp-opts"><legend>' + esc(opt.name) + '</legend>' + opt.values.map(function (v, i) {
+            return '<label><input type="radio" name="opt" value="' + i + '"' + (i ? '' : ' checked') + '><span>' + esc(v[0]) + '</span><b>' + (v[1] ? '+ ' + fmt(v[1]) : esc(v[2])) + '</b></label>';
+          }).join('') + '</fieldset>' : '') +
+          '<div class="price-wrapper pp-total"><span>الإجمالي</span><h2 class="total-price">' + fmt(p.price) + '</h2></div>' +
+          '<div class="pp-buy"><div class="qty" role="group" aria-label="الكمية"><button type="button" data-q="1" aria-label="زيادة">+</button><input id="qty" type="number" min="1" max="10" value="1" aria-label="الكمية" inputmode="numeric"><button type="button" data-q="-1" aria-label="إنقاص">−</button></div>' +
           '<salla-add-product-button style="display:flex;flex:1;min-width:140px"><button type="button" class="btn" id="addBtn" style="flex:1">أضف للسلة</button></salla-add-product-button><button type="button" class="btn btn--dark" id="buyBtn">اشترِ الآن</button>' + heartBtn(p, 'pp-heart') + '</div>' +
+        '</form>' +
         '<div class="pp-perks"><div><b>توصيل سريع</b><span class="muted">1–3 أيام</span></div><div><b>ضمان الوكيل</b><span class="muted">منتج أصلي</span></div><div><b>استرجاع</b><span class="muted">خلال 7 أيام</span></div></div>' +
-        '<div class="box"><h2 style="font-size:17px;margin:0 0 10px">أبرز المواصفات</h2><ul class="pp-specs">' + specs.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul></div>' +
         '<table class="pp-table"><tr><th>الماركة</th><td dir="ltr" style="text-align:right">' + esc(p.brand) + '</td></tr><tr><th>القسم</th><td><a href="collection.html#c' + p.cat + '">' + esc(c.name) + '</a></td></tr><tr><th>رمز المنتج</th><td dir="ltr" style="text-align:right">' + esc(p.sku) + '</td></tr></table>' +
       '</div>';
-    var q = $('#qty');
-    root.addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (b) q.value = Math.max(1, Math.min(10, (+q.value || 1) + +b.getAttribute('data-q'))); });
-    var add = function () { var n = Math.max(1, Math.min(10, +q.value || 1)); cartAdd(p.id, n); added(p, n); };
+    var q = $('#qty'), form = $('.product-form', root);
+    function chosen() { var r = $('input[name=opt]:checked', root); var v = opt && r ? opt.values[+r.value] : null; return v && v[1] ? { o: v[0], x: v[1] } : null; }
+    function n() { return Math.max(1, Math.min(10, +q.value || 1)); }
+    function reprice() {   // like Salla: the price updates with the option and the quantity
+      var o = chosen(), u = p.price + (o ? o.x : 0), t = u * n();
+      $('.total-price', root).textContent = fmt(t);
+      $('.pp-inst', root).innerHTML = '<span><span class="tag tag--tabby">tabby</span> قسّمها على 4 دفعات: <b class="num">' + fmt(Math.round(t / 4 * 100) / 100) + '</b> بدون فوائد</span><span><span class="tag tag--tamara">tamara</span> أو على 3 دفعات: <b class="num">' + fmt(Math.round(t / 3 * 100) / 100) + '</b></span>';
+    }
+    root.addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (b) { q.value = Math.max(1, Math.min(10, (+q.value || 1) + +b.getAttribute('data-q'))); reprice(); } });
+    form.addEventListener('change', reprice); q.addEventListener('input', reprice);
+    form.addEventListener('submit', function (e) { e.preventDefault(); });
+    reprice();
+    var add = function () { cartAdd(p.id, n(), chosen()); added(p, n()); };
     $('#addBtn').addEventListener('click', add);
-    $('#buyBtn').addEventListener('click', function () { cartAdd(p.id, Math.max(1, Math.min(10, +q.value || 1))); location.href = 'checkout.html'; });
-    var z = $('#zoom');
-    z.addEventListener('click', function () { z.classList.toggle('zoom'); });
-    z.addEventListener('mousemove', function (e) { var r = z.getBoundingClientRect(); $('img', z).style.transformOrigin = ((e.clientX - r.left) / r.width * 100) + '% ' + ((e.clientY - r.top) / r.height * 100) + '%'; });
-    z.addEventListener('mouseleave', function () { z.classList.remove('zoom'); });
+    $('#buyBtn').addEventListener('click', function () { cartAdd(p.id, n(), chosen()); location.href = 'checkout.html'; });
+    // classic gallery: thumbnails switch the active slide (the studio gallery follows it)
+    var slides = $$('.pp-main', root);
+    root.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-th]'); if (!t) return;
+      var k = +t.getAttribute('data-th');
+      slides.forEach(function (sl, i) { sl.hidden = i !== k; sl.classList.toggle('swiper-slide-active', i === k); });
+      $$('[data-th]', root).forEach(function (b, i) { if (i === k) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+    });
+    slides.forEach(function (z) {
+      z.addEventListener('click', function () { z.classList.toggle('zoom'); });
+      z.addEventListener('mousemove', function (e) { var r = z.getBoundingClientRect(); $('img', z).style.transformOrigin = ((e.clientX - r.left) / r.width * 100) + '% ' + ((e.clientY - r.top) / r.height * 100) + '%'; });
+      z.addEventListener('mouseleave', function () { z.classList.remove('zoom'); });
+    });
     // related: same category first, then offers
     var rel = P.filter(function (x) { return x.cat === p.cat && x.id !== p.id; });
     rel = rel.concat(P.filter(function (x) { return x.is_on_sale && x.cat !== p.cat; })).slice(0, 4);
@@ -263,8 +303,8 @@
       if (!lines.length) { root.innerHTML = '<div style="grid-column:1/-1">' + empty('cart', 'سلتك فاضية', 'تصفّح الأقسام وأضف اللي يعجبك.', ['ابدأ التسوق', 'index.html']) + '</div>'; return; }
       root.innerHTML = '<div class="box" style="min-width:0">' + lines.map(function (l) {
         var p = BY[l.id];
-        return '<div class="cline"><a href="' + p.url + '"><img src="' + p.image.url + '" alt=""></a><div style="min-width:0"><h3><a href="' + p.url + '">' + esc(p.name) + '</a></h3><span class="muted num" style="font-size:13px">' + fmt(p.price) + (off(p) ? ' · <s>' + fmt(p.regular_price) + '</s>' : '') + '</span></div>' +
-          '<div class="r"><b>' + fmt(p.price * l.qty) + '</b><div class="qty qty--sm" role="group" aria-label="كمية ' + esc(p.name) + '"><button type="button" data-set="' + p.id + '" data-v="' + (l.qty + 1) + '" aria-label="زيادة">+</button><input value="' + l.qty + '" readonly aria-label="الكمية"><button type="button" data-set="' + p.id + '" data-v="' + (l.qty - 1) + '" aria-label="إنقاص">−</button></div><button type="button" class="rm" data-set="' + p.id + '" data-v="0">حذف</button></div></div>';
+        return '<div class="cline"><a href="' + p.url + '"><img src="' + p.image.url + '" alt=""></a><div style="min-width:0"><h3><a href="' + p.url + '">' + esc(p.name) + '</a></h3>' + (l.o ? '<span class="muted" style="font-size:13px;display:block">' + esc(l.o) + ' (+' + fmt(l.x) + ')</span>' : '') + '<span class="muted num" style="font-size:13px">' + fmt(unit(l)) + (off(p) ? ' · <s>' + fmt(p.regular_price + (l.x || 0)) + '</s>' : '') + '</span></div>' +
+          '<div class="r"><b>' + fmt(unit(l) * l.qty) + '</b><div class="qty qty--sm" role="group" aria-label="كمية ' + esc(p.name) + '"><button type="button" data-set="' + esc(lkey(l)) + '" data-v="' + (l.qty + 1) + '" aria-label="زيادة">+</button><input value="' + l.qty + '" readonly aria-label="الكمية"><button type="button" data-set="' + esc(lkey(l)) + '" data-v="' + (l.qty - 1) + '" aria-label="إنقاص">−</button></div><button type="button" class="rm" data-set="' + esc(lkey(l)) + '" data-v="0">حذف</button></div></div>';
       }).join('') + '</div>' +
         '<aside class="box sum"><h2>ملخص الطلب</h2>' +
         summaryRows(t) +
@@ -302,7 +342,7 @@
       '<fieldset><legend><i>4</i>طريقة الدفع</legend><div class="opts">' + PAYS.map(function (x, i) { return '<label class="opt"><input type="radio" name="pay" value="' + x[0] + '"' + (i ? '' : ' checked') + '><span><b>' + x[1] + '</b><small>' + x[2] + '</small></span></label>'; }).join('') + '</div>' +
         '<p class="muted full" style="grid-column:1/-1;margin:0;font-size:13px">في المتجر الحقيقي تفتح صفحة الدفع الآمنة من سلة. هذه معاينة: ما يُطلب منك أي بيانات بطاقة ولا يتم أي دفع.</p></fieldset>' +
       '<button class="btn btn--block" type="submit" id="placeBtn" style="padding:14px;font-size:16px">تأكيد الطلب</button></form>' +
-      '<aside class="box sum"><h2>طلبك (' + plural(cartCount()) + ')</h2><div class="mini">' + cart().map(function (l) { var p = BY[l.id]; return '<div><img src="' + p.image.url + '" alt=""><span>' + esc(p.name) + ' <span class="muted">× ' + l.qty + '</span></span><b>' + fmt(p.price * l.qty) + '</b></div>'; }).join('') + '</div><div id="coSum" style="display:flex;flex-direction:column;gap:10px"></div><a href="cart.html" class="linkbtn" style="text-align:center">تعديل السلة</a></aside>';
+      '<aside class="box sum"><h2>طلبك (' + plural(cartCount()) + ')</h2><div class="mini">' + cart().map(function (l) { var p = BY[l.id]; return '<div><img src="' + p.image.url + '" alt=""><span>' + esc(p.name) + (l.o ? ' <span class="muted">(' + esc(l.o) + ')</span>' : '') + ' <span class="muted">× ' + l.qty + '</span></span><b>' + fmt(unit(l) * l.qty) + '</b></div>'; }).join('') + '</div><div id="coSum" style="display:flex;flex-direction:column;gap:10px"></div><a href="cart.html" class="linkbtn" style="text-align:center">تعديل السلة</a></aside>';
     var form = $('#coForm');
     function sel(n) { return (form.querySelector('[name=' + n + ']:checked') || {}).value; }
     function draw() { var t = totals(cart(), sel('ship'), sel('pay')); $('#coSum').innerHTML = summaryRows(t); var ts = totals(cart(), 'std'); $('#stdPrice').textContent = ts.ship ? fmt(ts.ship) : 'مجاني'; $('#placeBtn').textContent = 'تأكيد الطلب · ' + fmt(t.total); }
@@ -323,7 +363,7 @@
       var pay = PAYS.filter(function (x) { return x[0] === order.pay; })[0][1];
       $('#coTitle').hidden = true; $('#coCrumbs').hidden = true;
       root.outerHTML = '<div class="done gut"><div class="ok">' + ICON.check + '</div><h1>تم استلام طلبك</h1><p class="muted" style="margin:0">شكراً ' + esc(v('name').split(' ')[0]) + '! رقم طلبك <b class="num" dir="ltr">#' + order.no + '</b>، ورح نرسل لك تحديثات الشحن على جوالك.</p>' +
-        '<div class="box sum" style="position:static"><div class="mini">' + lines.map(function (l) { var p = BY[l.id]; return '<div><img src="' + p.image.url + '" alt=""><span>' + esc(p.name) + ' <span class="muted">× ' + l.qty + '</span></span><b>' + fmt(p.price * l.qty) + '</b></div>'; }).join('') + '</div>' + summaryRows(t) + '<div class="row"><span>الدفع</span><span>' + esc(pay) + '</span></div><div class="row"><span>التوصيل إلى</span><span>' + esc(v('city')) + '</span></div></div>' +
+        '<div class="box sum" style="position:static"><div class="mini">' + lines.map(function (l) { var p = BY[l.id]; return '<div><img src="' + p.image.url + '" alt=""><span>' + esc(p.name) + (l.o ? ' <span class="muted">(' + esc(l.o) + ')</span>' : '') + ' <span class="muted">× ' + l.qty + '</span></span><b>' + fmt(unit(l) * l.qty) + '</b></div>'; }).join('') + '</div>' + summaryRows(t) + '<div class="row"><span>الدفع</span><span>' + esc(pay) + '</span></div><div class="row"><span>التوصيل إلى</span><span>' + esc(v('city')) + '</span></div></div>' +
         '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><a class="btn" href="account.html">تتبع طلبك</a><a class="btn btn--ghost" href="index.html">متابعة التسوق</a></div>' +
         '<span class="muted" style="font-size:12px">معاينة تجريبية: الطلب محفوظ في هذا المتصفح فقط.</span></div>';
       scrollTo(0, 0);
@@ -346,7 +386,7 @@
     root.addEventListener('click', function (e) {
       var b = e.target.closest('[data-again]'); if (!b) return;
       var o = orders.filter(function (x) { return x.no === b.getAttribute('data-again'); })[0];
-      o.lines.forEach(function (l) { if (BY[l.id]) cartAdd(l.id, l.qty); });
+      o.lines.forEach(function (l) { if (BY[l.id]) cartAdd(l.id, l.qty, l.o ? { o: l.o, x: l.x } : null); });
       say('أُضيفت منتجات الطلب للسلة', ['عرض السلة', 'cart.html']);
     });
     var me = load('ish_me', {});

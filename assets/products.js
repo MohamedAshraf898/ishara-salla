@@ -19,6 +19,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-001.jpg"
 },
+"images": [
+{
+"url": "img/ISH-001.jpg",
+"alt": "آيفون 16 برو 256 جيجا - تيتانيوم صحراوي"
+},
+{
+"url": "img/ISH-001-2.jpg",
+"alt": "آيفون 16 برو 256 جيجا - تيتانيوم صحراوي - قريب"
+},
+{
+"url": "img/ISH-001-3.jpg",
+"alt": "آيفون 16 برو 256 جيجا - تيتانيوم صحراوي - تفاصيل"
+}
+],
 "description": "شاشة 6.3 بوصة Super Retina XDR بتقنية ProMotion، معالج A18 Pro، كاميرا 48 ميجابكسل مع زر التحكم بالكاميرا، شريحة eSIM وشريحة فعلية. ضمان الوكيل سنتين.",
 "brand": "Apple",
 "sku": "ISH-001",
@@ -44,6 +58,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-002.jpg"
 },
+"images": [
+{
+"url": "img/ISH-002.jpg",
+"alt": "آيفون 16 128 جيجا - أسود"
+},
+{
+"url": "img/ISH-002-2.jpg",
+"alt": "آيفون 16 128 جيجا - أسود - قريب"
+},
+{
+"url": "img/ISH-002-3.jpg",
+"alt": "آيفون 16 128 جيجا - أسود - تفاصيل"
+}
+],
 "description": "شاشة 6.1 بوصة، معالج A18، كاميرا مزدوجة 48 ميجابكسل، زر الإجراءات وزر التحكم بالكاميرا. ضمان الوكيل سنتين.",
 "brand": "Apple",
 "sku": "ISH-002",
@@ -69,6 +97,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-003.jpg"
 },
+"images": [
+{
+"url": "img/ISH-003.jpg",
+"alt": "سامسونج جالكسي S25 ألترا 512 جيجا - تيتانيوم رمادي"
+},
+{
+"url": "img/ISH-003-2.jpg",
+"alt": "سامسونج جالكسي S25 ألترا 512 جيجا - تيتانيوم رمادي - قريب"
+},
+{
+"url": "img/ISH-003-3.jpg",
+"alt": "سامسونج جالكسي S25 ألترا 512 جيجا - تيتانيوم رمادي - تفاصيل"
+}
+],
 "description": "شاشة 6.9 بوصة Dynamic AMOLED 2X، معالج Snapdragon 8 Elite، كاميرا 200 ميجابكسل، قلم S Pen، ميزات Galaxy AI.",
 "brand": "Samsung",
 "sku": "ISH-003",
@@ -94,6 +136,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-004.jpg"
 },
+"images": [
+{
+"url": "img/ISH-004.jpg",
+"alt": "سامسونج جالكسي A56 256 جيجا"
+},
+{
+"url": "img/ISH-004-2.jpg",
+"alt": "سامسونج جالكسي A56 256 جيجا - قريب"
+},
+{
+"url": "img/ISH-004-3.jpg",
+"alt": "سامسونج جالكسي A56 256 جيجا - تفاصيل"
+}
+],
 "description": "شاشة 6.7 بوصة Super AMOLED بمعدل 120 هرتز، كاميرا 50 ميجابكسل، بطارية 5000 مللي أمبير مع شحن سريع 45 واط، مقاوم للماء IP67.",
 "brand": "Samsung",
 "sku": "ISH-004",
@@ -119,6 +175,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-005.jpg"
 },
+"images": [
+{
+"url": "img/ISH-005.jpg",
+"alt": "شاومي ريدمي نوت 14 برو 256 جيجا"
+},
+{
+"url": "img/ISH-005-2.jpg",
+"alt": "شاومي ريدمي نوت 14 برو 256 جيجا - قريب"
+},
+{
+"url": "img/ISH-005-3.jpg",
+"alt": "شاومي ريدمي نوت 14 برو 256 جيجا - تفاصيل"
+}
+],
 "description": "شاشة AMOLED منحنية 6.67 بوصة، كاميرا 200 ميجابكسل، شحن سريع 120 واط، بطارية 5110 مللي أمبير.",
 "brand": "Xiaomi",
 "sku": "ISH-005",
@@ -144,6 +214,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-006.jpg"
 },
+"images": [
+{
+"url": "img/ISH-006.jpg",
+"alt": "هواوي نوفا 13 برو 512 جيجا"
+},
+{
+"url": "img/ISH-006-2.jpg",
+"alt": "هواوي نوفا 13 برو 512 جيجا - قريب"
+},
+{
+"url": "img/ISH-006-3.jpg",
+"alt": "هواوي نوفا 13 برو 512 جيجا - تفاصيل"
+}
+],
 "description": "شاشة OLED منحنية 6.76 بوصة، كاميرا سيلفي مزدوجة 60 ميجابكسل، شحن سريع 100 واط.",
 "brand": "Huawei",
 "sku": "ISH-006",
@@ -169,6 +253,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-007.jpg"
 },
+"images": [
+{
+"url": "img/ISH-007.jpg",
+"alt": "ماك بوك إير 13 بوصة M3 - 8 جيجا رام 256 جيجا"
+},
+{
+"url": "img/ISH-007-2.jpg",
+"alt": "ماك بوك إير 13 بوصة M3 - 8 جيجا رام 256 جيجا - قريب"
+},
+{
+"url": "img/ISH-007-3.jpg",
+"alt": "ماك بوك إير 13 بوصة M3 - 8 جيجا رام 256 جيجا - تفاصيل"
+}
+],
 "description": "شريحة Apple M3، شاشة Liquid Retina 13.6 بوصة، بطارية حتى 18 ساعة، تصميم بدون مروحة وصامت تماماً.",
 "brand": "Apple",
 "sku": "ISH-007",
@@ -194,6 +292,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-008.jpg"
 },
+"images": [
+{
+"url": "img/ISH-008.jpg",
+"alt": "ماك بوك برو 14 بوصة M4 - 16 جيجا رام 512 جيجا"
+},
+{
+"url": "img/ISH-008-2.jpg",
+"alt": "ماك بوك برو 14 بوصة M4 - 16 جيجا رام 512 جيجا - قريب"
+},
+{
+"url": "img/ISH-008-3.jpg",
+"alt": "ماك بوك برو 14 بوصة M4 - 16 جيجا رام 512 جيجا - تفاصيل"
+}
+],
 "description": "شريحة Apple M4، شاشة Liquid Retina XDR بقياس 14.2 بوصة، 16 جيجا ذاكرة موحدة، منافذ Thunderbolt 4 وHDMI وقارئ بطاقات SD.",
 "brand": "Apple",
 "sku": "ISH-008",
@@ -219,6 +331,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-009.jpg"
 },
+"images": [
+{
+"url": "img/ISH-009.jpg",
+"alt": "لينوفو IdeaPad Slim 5 - Core Ultra 7، 16 جيجا، 1 تيرا"
+},
+{
+"url": "img/ISH-009-2.jpg",
+"alt": "لينوفو IdeaPad Slim 5 - Core Ultra 7، 16 جيجا، 1 تيرا - قريب"
+},
+{
+"url": "img/ISH-009-3.jpg",
+"alt": "لينوفو IdeaPad Slim 5 - Core Ultra 7، 16 جيجا، 1 تيرا - تفاصيل"
+}
+],
 "description": "معالج Intel Core Ultra 7، ذاكرة 16 جيجا، تخزين SSD سعة 1 تيرا، شاشة OLED بقياس 14 بوصة، وزن خفيف.",
 "brand": "Lenovo",
 "sku": "ISH-009",
@@ -244,6 +370,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-010.jpg"
 },
+"images": [
+{
+"url": "img/ISH-010.jpg",
+"alt": "ديل XPS 13 - Core Ultra 7، 16 جيجا، 512 جيجا"
+},
+{
+"url": "img/ISH-010-2.jpg",
+"alt": "ديل XPS 13 - Core Ultra 7، 16 جيجا، 512 جيجا - قريب"
+},
+{
+"url": "img/ISH-010-3.jpg",
+"alt": "ديل XPS 13 - Core Ultra 7، 16 جيجا، 512 جيجا - تفاصيل"
+}
+],
 "description": "تصميم من الألمنيوم، شاشة InfinityEdge 13.4 بوصة، معالج Intel Core Ultra 7، بطارية تدوم طويلاً.",
 "brand": "Dell",
 "sku": "ISH-010",
@@ -269,6 +409,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-011.jpg"
 },
+"images": [
+{
+"url": "img/ISH-011.jpg",
+"alt": "أسوس ROG Strix G16 - RTX 4060، Core i7، 16 جيجا"
+},
+{
+"url": "img/ISH-011-2.jpg",
+"alt": "أسوس ROG Strix G16 - RTX 4060، Core i7، 16 جيجا - قريب"
+},
+{
+"url": "img/ISH-011-3.jpg",
+"alt": "أسوس ROG Strix G16 - RTX 4060، Core i7، 16 جيجا - تفاصيل"
+}
+],
 "description": "لابتوب ألعاب بمعالج Intel Core i7 وكرت شاشة NVIDIA RTX 4060، شاشة 16 بوصة بمعدل 165 هرتز، تبريد متقدم.",
 "brand": "ASUS",
 "sku": "ISH-011",
@@ -294,6 +448,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-012.jpg"
 },
+"images": [
+{
+"url": "img/ISH-012.jpg",
+"alt": "آيباد إير 11 بوصة M2 - 128 جيجا واي فاي"
+},
+{
+"url": "img/ISH-012-2.jpg",
+"alt": "آيباد إير 11 بوصة M2 - 128 جيجا واي فاي - قريب"
+},
+{
+"url": "img/ISH-012-3.jpg",
+"alt": "آيباد إير 11 بوصة M2 - 128 جيجا واي فاي - تفاصيل"
+}
+],
 "description": "شريحة M2، شاشة Liquid Retina بقياس 11 بوصة، يدعم Apple Pencil Pro ولوحة المفاتيح Magic Keyboard.",
 "brand": "Apple",
 "sku": "ISH-012",
@@ -319,6 +487,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-013.jpg"
 },
+"images": [
+{
+"url": "img/ISH-013.jpg",
+"alt": "آيباد الجيل العاشر 64 جيجا واي فاي"
+},
+{
+"url": "img/ISH-013-2.jpg",
+"alt": "آيباد الجيل العاشر 64 جيجا واي فاي - قريب"
+},
+{
+"url": "img/ISH-013-3.jpg",
+"alt": "آيباد الجيل العاشر 64 جيجا واي فاي - تفاصيل"
+}
+],
 "description": "شاشة 10.9 بوصة، معالج A14 Bionic، منفذ USB-C، كاميرا أمامية أفقية لمكالمات الفيديو.",
 "brand": "Apple",
 "sku": "ISH-013",
@@ -344,6 +526,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-014.jpg"
 },
+"images": [
+{
+"url": "img/ISH-014.jpg",
+"alt": "سامسونج جالكسي تاب S10 FE - 128 جيجا"
+},
+{
+"url": "img/ISH-014-2.jpg",
+"alt": "سامسونج جالكسي تاب S10 FE - 128 جيجا - قريب"
+},
+{
+"url": "img/ISH-014-3.jpg",
+"alt": "سامسونج جالكسي تاب S10 FE - 128 جيجا - تفاصيل"
+}
+],
 "description": "شاشة 10.9 بوصة، قلم S Pen في العلبة، مقاوم للماء والغبار IP68، ميزات Galaxy AI.",
 "brand": "Samsung",
 "sku": "ISH-014",
@@ -369,6 +565,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-015.jpg"
 },
+"images": [
+{
+"url": "img/ISH-015.jpg",
+"alt": "سماعات أبل AirPods Pro 2 مع علبة USB-C"
+},
+{
+"url": "img/ISH-015-2.jpg",
+"alt": "سماعات أبل AirPods Pro 2 مع علبة USB-C - قريب"
+},
+{
+"url": "img/ISH-015-3.jpg",
+"alt": "سماعات أبل AirPods Pro 2 مع علبة USB-C - تفاصيل"
+}
+],
 "description": "إلغاء ضوضاء نشط بمستوى أعلى بمرتين، وضع الشفافية التكيفي، صوت مكاني مخصص، علبة شحن USB-C.",
 "brand": "Apple",
 "sku": "ISH-015",
@@ -394,6 +604,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-016.jpg"
 },
+"images": [
+{
+"url": "img/ISH-016.jpg",
+"alt": "سماعات سوني WH-1000XM5 لاسلكية - أسود"
+},
+{
+"url": "img/ISH-016-2.jpg",
+"alt": "سماعات سوني WH-1000XM5 لاسلكية - أسود - قريب"
+},
+{
+"url": "img/ISH-016-3.jpg",
+"alt": "سماعات سوني WH-1000XM5 لاسلكية - أسود - تفاصيل"
+}
+],
 "description": "أفضل إلغاء ضوضاء من سوني، بطارية تدوم حتى 30 ساعة، شحن سريع، ميكروفونات واضحة للمكالمات.",
 "brand": "Sony",
 "sku": "ISH-016",
@@ -419,6 +643,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-017.jpg"
 },
+"images": [
+{
+"url": "img/ISH-017.jpg",
+"alt": "سماعات سامسونج Galaxy Buds3 Pro"
+},
+{
+"url": "img/ISH-017-2.jpg",
+"alt": "سماعات سامسونج Galaxy Buds3 Pro - قريب"
+},
+{
+"url": "img/ISH-017-3.jpg",
+"alt": "سماعات سامسونج Galaxy Buds3 Pro - تفاصيل"
+}
+],
 "description": "إلغاء ضوضاء ذكي، صوت عالي الدقة، تصميم مريح، مقاومة للماء IP57.",
 "brand": "Samsung",
 "sku": "ISH-017",
@@ -444,6 +682,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-018.jpg"
 },
+"images": [
+{
+"url": "img/ISH-018.jpg",
+"alt": "سماعة JBL Flip 6 بلوتوث - أسود"
+},
+{
+"url": "img/ISH-018-2.jpg",
+"alt": "سماعة JBL Flip 6 بلوتوث - أسود - قريب"
+},
+{
+"url": "img/ISH-018-3.jpg",
+"alt": "سماعة JBL Flip 6 بلوتوث - أسود - تفاصيل"
+}
+],
 "description": "سماعة محمولة بصوت JBL Pro، مقاومة للماء والغبار IP67، بطارية حتى 12 ساعة.",
 "brand": "JBL",
 "sku": "ISH-018",
@@ -469,6 +721,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-019.jpg"
 },
+"images": [
+{
+"url": "img/ISH-019.jpg",
+"alt": "ساعة أبل Series 10 مقاس 46 ملم GPS"
+},
+{
+"url": "img/ISH-019-2.jpg",
+"alt": "ساعة أبل Series 10 مقاس 46 ملم GPS - قريب"
+},
+{
+"url": "img/ISH-019-3.jpg",
+"alt": "ساعة أبل Series 10 مقاس 46 ملم GPS - تفاصيل"
+}
+],
 "description": "أكبر شاشة وأنحف تصميم في ساعات أبل، تتبع النوم والصحة واللياقة، شحن سريع.",
 "brand": "Apple",
 "sku": "ISH-019",
@@ -494,6 +760,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-020.jpg"
 },
+"images": [
+{
+"url": "img/ISH-020.jpg",
+"alt": "ساعة سامسونج Galaxy Watch7 مقاس 44 ملم"
+},
+{
+"url": "img/ISH-020-2.jpg",
+"alt": "ساعة سامسونج Galaxy Watch7 مقاس 44 ملم - قريب"
+},
+{
+"url": "img/ISH-020-3.jpg",
+"alt": "ساعة سامسونج Galaxy Watch7 مقاس 44 ملم - تفاصيل"
+}
+],
 "description": "تتبع متقدم للصحة والنوم، معالج أسرع، ميزات Galaxy AI، تعمل مع جوالات أندرويد.",
 "brand": "Samsung",
 "sku": "ISH-020",
@@ -519,6 +799,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-021.jpg"
 },
+"images": [
+{
+"url": "img/ISH-021.jpg",
+"alt": "ساعة هواوي Watch GT 5 مقاس 46 ملم"
+},
+{
+"url": "img/ISH-021-2.jpg",
+"alt": "ساعة هواوي Watch GT 5 مقاس 46 ملم - قريب"
+},
+{
+"url": "img/ISH-021-3.jpg",
+"alt": "ساعة هواوي Watch GT 5 مقاس 46 ملم - تفاصيل"
+}
+],
 "description": "بطارية حتى 14 يوماً، تتبع أكثر من 100 رياضة، شاشة AMOLED، تصميم أنيق.",
 "brand": "Huawei",
 "sku": "ISH-021",
@@ -544,6 +838,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-022.jpg"
 },
+"images": [
+{
+"url": "img/ISH-022.jpg",
+"alt": "جهاز بلايستيشن 5 سليم - إصدار الأقراص"
+},
+{
+"url": "img/ISH-022-2.jpg",
+"alt": "جهاز بلايستيشن 5 سليم - إصدار الأقراص - قريب"
+},
+{
+"url": "img/ISH-022-3.jpg",
+"alt": "جهاز بلايستيشن 5 سليم - إصدار الأقراص - تفاصيل"
+}
+],
 "description": "تصميم أنحف، تخزين 1 تيرا، دعم ألعاب 4K حتى 120 إطار، يد تحكم DualSense.",
 "brand": "Sony",
 "sku": "ISH-022",
@@ -569,6 +877,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-023.jpg"
 },
+"images": [
+{
+"url": "img/ISH-023.jpg",
+"alt": "يد تحكم سوني DualSense - أبيض"
+},
+{
+"url": "img/ISH-023-2.jpg",
+"alt": "يد تحكم سوني DualSense - أبيض - قريب"
+},
+{
+"url": "img/ISH-023-3.jpg",
+"alt": "يد تحكم سوني DualSense - أبيض - تفاصيل"
+}
+],
 "description": "ردود فعل لمسية ومحفزات تكيفية، ميكروفون مدمج، منفذ USB-C.",
 "brand": "Sony",
 "sku": "ISH-023",
@@ -594,6 +916,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-024.jpg"
 },
+"images": [
+{
+"url": "img/ISH-024.jpg",
+"alt": "جهاز نينتندو سويتش OLED"
+},
+{
+"url": "img/ISH-024-2.jpg",
+"alt": "جهاز نينتندو سويتش OLED - قريب"
+},
+{
+"url": "img/ISH-024-3.jpg",
+"alt": "جهاز نينتندو سويتش OLED - تفاصيل"
+}
+],
 "description": "شاشة OLED بقياس 7 بوصات، تخزين 64 جيجا، يعمل محمولاً أو على التلفاز.",
 "brand": "Nintendo",
 "sku": "ISH-024",
@@ -619,6 +955,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-025.jpg"
 },
+"images": [
+{
+"url": "img/ISH-025.jpg",
+"alt": "سماعة ألعاب ريزر BlackShark V2 X"
+},
+{
+"url": "img/ISH-025-2.jpg",
+"alt": "سماعة ألعاب ريزر BlackShark V2 X - قريب"
+},
+{
+"url": "img/ISH-025-3.jpg",
+"alt": "سماعة ألعاب ريزر BlackShark V2 X - تفاصيل"
+}
+],
 "description": "سماعة ألعاب سلكية خفيفة الوزن بصوت محيطي 7.1 وميكروفون قابل للفصل.",
 "brand": "Razer",
 "sku": "ISH-025",
@@ -644,6 +994,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-026.jpg"
 },
+"images": [
+{
+"url": "img/ISH-026.jpg",
+"alt": "شاحن أنكر Nano 65 واط USB-C"
+},
+{
+"url": "img/ISH-026-2.jpg",
+"alt": "شاحن أنكر Nano 65 واط USB-C - قريب"
+},
+{
+"url": "img/ISH-026-3.jpg",
+"alt": "شاحن أنكر Nano 65 واط USB-C - تفاصيل"
+}
+],
 "description": "شاحن سريع بتقنية GaN، منفذين USB-C ومنفذ USB-A، يشحن اللابتوب والجوال معاً.",
 "brand": "Anker",
 "sku": "ISH-026",
@@ -669,6 +1033,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-027.jpg"
 },
+"images": [
+{
+"url": "img/ISH-027.jpg",
+"alt": "باور بانك أنكر 20000 مللي أمبير 30 واط"
+},
+{
+"url": "img/ISH-027-2.jpg",
+"alt": "باور بانك أنكر 20000 مللي أمبير 30 واط - قريب"
+},
+{
+"url": "img/ISH-027-3.jpg",
+"alt": "باور بانك أنكر 20000 مللي أمبير 30 واط - تفاصيل"
+}
+],
 "description": "بطارية متنقلة بسعة 20000 مللي أمبير، شحن سريع 30 واط، تشحن الجوال حتى 4 مرات.",
 "brand": "Anker",
 "sku": "ISH-027",
@@ -694,6 +1072,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-028.jpg"
 },
+"images": [
+{
+"url": "img/ISH-028.jpg",
+"alt": "كيبل أبل USB-C مجدول 1 متر"
+},
+{
+"url": "img/ISH-028-2.jpg",
+"alt": "كيبل أبل USB-C مجدول 1 متر - قريب"
+},
+{
+"url": "img/ISH-028-3.jpg",
+"alt": "كيبل أبل USB-C مجدول 1 متر - تفاصيل"
+}
+],
 "description": "كيبل أصلي مجدول للشحن ونقل البيانات بطول متر واحد.",
 "brand": "Apple",
 "sku": "ISH-028",
@@ -719,6 +1111,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-029.jpg"
 },
+"images": [
+{
+"url": "img/ISH-029.jpg",
+"alt": "جراب سيليكون أبل لآيفون 16 برو مع MagSafe"
+},
+{
+"url": "img/ISH-029-2.jpg",
+"alt": "جراب سيليكون أبل لآيفون 16 برو مع MagSafe - قريب"
+},
+{
+"url": "img/ISH-029-3.jpg",
+"alt": "جراب سيليكون أبل لآيفون 16 برو مع MagSafe - تفاصيل"
+}
+],
 "description": "جراب سيليكون أصلي بملمس ناعم، يدعم MagSafe للشحن اللاسلكي.",
 "brand": "Apple",
 "sku": "ISH-029",
@@ -744,6 +1150,20 @@ window.ISH_P = [
 "image": {
 "url": "img/ISH-030.jpg"
 },
+"images": [
+{
+"url": "img/ISH-030.jpg",
+"alt": "ماوس لوجيتك MX Master 3S لاسلكي"
+},
+{
+"url": "img/ISH-030-2.jpg",
+"alt": "ماوس لوجيتك MX Master 3S لاسلكي - قريب"
+},
+{
+"url": "img/ISH-030-3.jpg",
+"alt": "ماوس لوجيتك MX Master 3S لاسلكي - تفاصيل"
+}
+],
 "description": "ماوس لاسلكي احترافي بنقرات هادئة، مستشعر 8000 DPI، يعمل على الزجاج، شحن USB-C.",
 "brand": "Logitech",
 "sku": "ISH-030",

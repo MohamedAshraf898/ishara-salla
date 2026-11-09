@@ -292,3 +292,26 @@ salla-products-list{display:grid}
 .laysw{max-width:1200px;margin:12px auto 0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--shell-muted)}
 .laysw button{border:1px solid var(--shell-line);background:var(--shell-bg);color:inherit;font:inherit;font-weight:700;border-radius:999px;padding:5px 14px;cursor:pointer}
 .laysw button[aria-pressed="true"]{background:var(--color-primary);border-color:var(--color-primary);color:#fff}
+
+/* product page in Raed's structure (sidebar / main-content / form) */
+.container--product-details{max-width:1200px;margin-inline:auto}
+salla-slider,salla-installment{display:block}
+.pp-gal salla-slider{display:flex;flex-direction:column;gap:12px}
+.pp-thumbs{display:flex;gap:10px}
+.pp-thumbs button{width:72px;aspect-ratio:1/1;max-width:100%;border:2px solid transparent;border-radius:12px;padding:0;overflow:hidden;background:var(--shell-soft);cursor:pointer;opacity:.7}
+.pp-thumbs button[aria-current]{border-color:var(--color-primary);opacity:1}
+.pp-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.product-form{display:flex;flex-direction:column;gap:14px}
+.pp-opts{border:1px solid var(--shell-line);border-radius:14px;padding:12px 14px;margin:0;display:flex;flex-direction:column;gap:8px}
+.pp-opts legend{font-weight:700;padding:0 6px}
+.pp-opts label{display:flex;align-items:center;gap:10px;border:1.5px solid var(--shell-line);border-radius:12px;padding:10px 12px;cursor:pointer;font-size:14px}
+.pp-opts label:has(input:checked){border-color:var(--color-primary);background:color-mix(in srgb,var(--color-primary) 6%,transparent)}
+.pp-opts input{accent-color:var(--color-primary);margin:0}
+.pp-opts span{flex:1}
+.pp-opts b{font-size:13px;font-variant-numeric:tabular-nums;color:var(--shell-muted)}
+.pp-total{display:flex;justify-content:space-between;align-items:baseline;background:var(--shell-soft);border-radius:12px;padding:10px 14px}
+.pp-total h2{margin:0;font-size:22px;color:var(--color-primary);font-variant-numeric:tabular-nums}
+.pp-desc-t{font-size:17px;margin:0 0 10px}
+.ish-pdp-story .pp-desc-t{display:none}
+.ish-pdp-story .product__description.box{background:transparent;border:0}
+.pp-main[hidden]{display:none}

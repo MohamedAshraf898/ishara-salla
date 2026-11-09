@@ -56,6 +56,18 @@
     },
 
     product: {
+      // Product page layout: 'classic' (the theme's own) or 'studio' (title and price on top, a large photo
+      // gallery with thumbnails and full-screen view, the description beside it, and a sticky buy card).
+      layout: 'classic',
+      // Different layout for the products of some categories, by category id: { 123456: 'studio' }
+      layouts: {},
+      studio: {
+        perks: [['توصيل سريع', 'خلال 1–3 أيام'], ['ضمان الوكيل', 'منتج أصلي 100%'], ['استرجاع سهل', 'خلال 7 أيام']],
+        storyTitle: 'عن المنتج',
+        buyTitle: 'اختر وأضف للسلة',
+        // Raed's product page parts. Change only if your theme version uses other class names.
+        row: '.container--product-details > [id^="product-"]', gallery: '.sidebar', slider: 'salla-slider.details-slider', info: '.main-content'
+      },
       fbt: { enabled: true, title: 'يُشترى معاً بشكل متكرر', limit: 3 },
 
       installments: {
@@ -621,9 +633,12 @@
     if (!slot) return;
     var top = document.createElement('div'); top.className = 'ish-product';
     slot.parentNode.insertBefore(top, slot);
+    var pcat = catIdFromUrl(pg.parent && pg.parent.url);
+    var lay = window.ISHARA_PRODUCT_LAYOUT || (CONFIG.product.layouts && pcat && CONFIG.product.layouts[pcat]) || CONFIG.product.layout;
+    if (lay === 'studio') productStudio(main);
     details(id).then(function (cur) {
       if (!cur) return;
-      var catId = catIdFromUrl(pg.parent && pg.parent.url);
+      var catId = pcat;
       if (CONFIG.product.fbt.enabled && catId) fbt(top, cur, catId);
       if (CONFIG.product.installments.enabled || CONFIG.product.tradeIn.enabled) calc(top, cur);
       if (CONFIG.product.faq.enabled) faq(slotEnd);
@@ -631,6 +646,120 @@
       recentlyViewed(cur, slotEnd);
     });
   }
+
+  /* ---------- product page: studio layout ----------
+     Only rearranges the theme's static parts (title, top price, description) and adds a photo gallery.
+     The theme's form (options, live price, quantity, add to cart) is not moved or changed. */
+  function productStudio(main) {
+    var c = CONFIG.product.studio || {};
+    var row = $(c.row, main); if (!row) return;
+    var gal = $(c.gallery, row), info = $(c.info, row); if (!gal || !info) return;
+    var slider = $(c.slider, gal);
+    document.body.classList.add('ish-pdp-studio'); row.classList.add('ish-pdp');
+    var pick = function (sel) { return $(sel, info); };
+
+    // 1) header: brand, name, subtitle, rating, price, perks
+    var head = document.createElement('div'); head.className = 'ish ish-pdp-head';
+    head.innerHTML = '<div class="ish-pdp-head__main"></div><div class="ish-pdp-head__price"></div>' +
+      (c.perks && c.perks.length ? '<ul class="ish-pdp-perks">' + c.perks.map(function (x) { return '<li><b>' + esc(x[0]) + '</b><span>' + esc(x[1]) + '</span></li>'; }).join('') + '</ul>' : '');
+    var hm = head.children[0], hp = head.children[1];
+    ['.product-brand', 'h1', '.product-entry__sub-title', 'salla-rating-stars'].forEach(function (sel) { var el = pick(sel); if (el) hm.appendChild(el); });
+    var price = pick('[data-testid="store-product-price"]'), tax = $$(':scope > small', info)[0];
+    if (price) hp.appendChild(price);
+    if (tax) hp.appendChild(tax);
+    row.parentNode.insertBefore(head, row);
+
+    // 2) description beside the gallery, fully open
+    var desc = pick('.product__description');
+    if (desc) {
+      var story = document.createElement('div'); story.className = 'ish ish-pdp-story';
+      story.innerHTML = '<h2 class="ish-h-sm">' + esc(c.storyTitle || '') + '</h2>';
+      story.appendChild(desc);
+      var more = $('#more-content', desc); if (more) more.style.maxHeight = 'none';
+      var mb = $('#btn-show-more', desc); if (mb) mb.hidden = true;
+      row.appendChild(story);
+    }
+    if (c.buyTitle) { var bt = document.createElement('div'); bt.className = 'ish ish-pdp-buyt'; bt.textContent = c.buyTitle; info.insertBefore(bt, info.firstChild); }
+
+    // 3) gallery from the theme slider's own image list (skipped for videos and 3D, the theme slider stays)
+    var imgs = [];
+    try { imgs = JSON.parse((slider && slider.getAttribute('data-images')) || '[]') || []; } catch (e) { imgs = []; }
+    if (!imgs.length || imgs.some(function (x) { return x && (x.video_url || x.three_d_image_url); })) return;
+    imgs = imgs.map(function (x) { return { url: typeof x === 'string' ? x : (x.url || (x.image && x.image.url) || ''), alt: (x && x.alt) || '' }; }).filter(function (x) { return x.url; });
+    if (!imgs.length) return;
+    var name = (hm.querySelector('h1') || {}).textContent || '';
+    var g = document.createElement('div'); g.className = 'ish ish-gal' + (imgs.length > 1 ? '' : ' ish-gal--one');
+    g.innerHTML = '<div class="ish-gal__stage"><div class="ish-gal__track" tabindex="0" aria-label="صور المنتج">' + imgs.map(function (x, i) {
+        return '<button type="button" class="ish-gal__slide" data-ish-zoom="' + i + '" aria-label="عرض الصورة ' + (i + 1) + ' بحجم كامل"><img src="' + esc(x.url) + '" alt="' + esc(x.alt || name) + '"' + (i ? ' loading="lazy"' : '') + '></button>';
+      }).join('') + '</div>' + wishBtn(page().id) +
+      (imgs.length > 1 ? '<span class="ish-gal__count" aria-live="polite"><b>1</b> / ' + imgs.length + '</span>' : '') +
+      '<span class="ish-gal__hint" aria-hidden="true">اضغط للتكبير</span></div>' +
+      (imgs.length > 1 ? '<div class="ish-gal__thumbs" role="group" aria-label="اختر صورة">' + imgs.map(function (x, i) {
+        return '<button type="button" data-ish-go="' + i + '" aria-label="الصورة ' + (i + 1) + '"' + (i ? '' : ' aria-current="true"') + '><img src="' + esc(x.url) + '" alt="" loading="lazy"></button>';
+      }).join('') + '</div>' : '');
+    gal.insertBefore(g, gal.firstChild);
+    gal.classList.add('ish-gal-ready');
+    var track = $('.ish-gal__track', g), cur = 0;
+    function mark(i) {
+      cur = i; var cnt = $('.ish-gal__count b', g); if (cnt) cnt.textContent = i + 1;
+      $$('[data-ish-go]', g).forEach(function (b) { if (+b.getAttribute('data-ish-go') === i) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+    }
+    function go(i, smooth) {
+      i = Math.max(0, Math.min(imgs.length - 1, i)); mark(i);
+      var sl = track.children[i]; if (sl) track.scrollTo({ left: sl.offsetLeft - track.offsetLeft, behavior: smooth === false ? 'auto' : 'smooth' });
+    }
+    g.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-ish-go]'); if (t) { go(+t.getAttribute('data-ish-go')); return; }
+      var z = e.target.closest('[data-ish-zoom]'); if (z) viewer(+z.getAttribute('data-ish-zoom'));
+    });
+    var st; track.addEventListener('scroll', function () {
+      clearTimeout(st); st = setTimeout(function () { var w = track.clientWidth || 1; mark(Math.round(Math.abs(track.scrollLeft) / w)); }, 80);
+    }, { passive: true });
+    track.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur + 1); }      // RTL: left is next
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(cur - 1); }
+    });
+
+    // full-screen viewer
+    var box;
+    function viewer(i) {
+      if (!box) {
+        box = document.createElement('div'); box.className = 'ish ish-viewer'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'صور المنتج');
+        box.innerHTML = '<button type="button" class="ish-viewer__x" aria-label="إغلاق">×</button><button type="button" class="ish-viewer__nav ish-viewer__prev" aria-label="السابقة">›</button><img alt=""><button type="button" class="ish-viewer__nav ish-viewer__next" aria-label="التالية">‹</button><span class="ish-viewer__n"></span>';
+        document.body.appendChild(box);
+        box.addEventListener('click', function (e) {
+          if (e.target === box || e.target.closest('.ish-viewer__x')) close();
+          else if (e.target.closest('.ish-viewer__prev')) show(box._i - 1);
+          else if (e.target.closest('.ish-viewer__next')) show(box._i + 1);
+        });
+        document.addEventListener('keydown', function (e) {
+          if (box.hidden) return;
+          if (e.key === 'Escape') close();
+          if (e.key === 'ArrowLeft') show(box._i + 1);
+          if (e.key === 'ArrowRight') show(box._i - 1);
+        });
+      }
+      box.hidden = false; document.documentElement.classList.add('ish-noscroll'); show(i); $('.ish-viewer__x', box).focus();
+    }
+    function show(i) {
+      i = (i + imgs.length) % imgs.length; box._i = i;
+      var im = $('img', box); im.src = imgs[i].url; im.alt = imgs[i].alt || name;
+      $('.ish-viewer__n', box).textContent = (i + 1) + ' / ' + imgs.length;
+      $$('.ish-viewer__nav', box).forEach(function (b) { b.hidden = imgs.length < 2; });
+    }
+    function close() { box.hidden = true; document.documentElement.classList.remove('ish-noscroll'); var sl = track.children[box._i]; if (sl) { go(box._i, false); sl.focus(); } }
+
+    // follow the theme slider when an option with its own photo is picked
+    if (slider && window.MutationObserver) {
+      var base = function (u) { return String(u || '').split('?')[0].split('/').pop(); };
+      new MutationObserver(function () {
+        var a = $('.swiper-slide-active:not(.slide--one-fourth) img', slider); if (!a) return;
+        var src = base(a.getAttribute('src') || a.getAttribute('data-src'));
+        for (var k = 0; k < imgs.length; k++) if (base(imgs[k].url) === src) { if (k !== cur) go(k); break; }
+      }).observe(slider, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    }
+  }
+
   function fbt(holder, cur, catId) {
     var c = CONFIG.product.fbt, sec = section('', ''); holder.appendChild(sec);
     fetchProducts({ source: 'categories', source_value: [catId], limit: 10 }).then(function (list) {
