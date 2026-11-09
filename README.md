@@ -40,7 +40,7 @@ The category page (`product.index`) comes in two layouts. Pick one in `CONFIG.co
 - **`banner`** (default): a dark banner with the category name, live stats (product count, lowest price, how many are on sale), a few product photos, and quick links to the other categories.
 - **`showroom`**: a light editorial header with a large title and a stats strip, the categories as underlined tabs, "مختارات القسم" (the product with the biggest discount, the cheapest one and a newer one, each with add to cart and a wishlist heart), a grid / list switch above the theme's product list, softer product cards, and photo tiles linking to the other categories at the end of the page.
 
-Both layouts only add sections around the theme's own product list. Raed's filters, sorting, paging and product links keep working. The list view is remembered in the visitor's browser. In the preview, use the "تصميم صفحة القسم" buttons on the category page to switch between the two.
+Both layouts only add sections around the theme's own product list. Raed's filters, sorting, paging and product links keep working. The list view is remembered in the visitor's browser. In the preview, each category has its own layout: laptops (لابتوبات) use the banner layout, and phones (جوالات) and the other categories use the showroom layout.
 
 ## Before importing products
 

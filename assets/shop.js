@@ -19,8 +19,8 @@
   var MEM = {};
   function load(k, d) { try { var v = localStorage.getItem(k); return v == null ? (k in MEM ? MEM[k] : d) : JSON.parse(v); } catch (e) { return k in MEM ? MEM[k] : d; } }
   function save(k, v) { MEM[k] = v; try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-  // share links: #showroom opens phones in the showroom layout, #banner opens laptops in the banner layout
-  if (PAGE === 'home' && (HASH === 'showroom' || HASH === 'banner')) { save('ish_coll_layout', HASH); location.replace(HASH === 'showroom' ? 'collection.html#c1' : 'collection.html#c2'); return; }
+  // share links: #showroom opens phones, #banner opens laptops (each category has its own layout)
+  if (PAGE === 'home' && (HASH === 'showroom' || HASH === 'banner')) { location.replace(HASH === 'showroom' ? 'collection.html#c1' : 'collection.html#c2'); return; }
 
   /* ---------- cart ---------- */
   var SHIP_FREE = 500, SHIP_STD = 25, SHIP_EXP = 45, COD_FEE = 15;
@@ -93,8 +93,10 @@
   var cat = /^c\d+$/.test(HASH) ? +HASH.slice(1) : null;
   var pid = /^p\d+$/.test(HASH) ? +HASH.slice(1) : null;
   if (PAGE === 'collection') cfgPage = { slug: 'product.index', id: cat };
-  // preview only: which category layout the custom code shows (the live store uses CONFIG.collection.layout)
-  if (PAGE === 'collection') window.ISHARA_COLLECTION_LAYOUT = load('ish_coll_layout', 'showroom') === 'banner' ? 'banner' : 'showroom';
+  // preview only: each category has its own layout, like CONFIG.collection.layouts on the live store.
+  // Laptops (2) use the banner layout; phones and every other category use the showroom layout.
+  var LAYOUTS = { 2: 'banner' };
+  if (PAGE === 'collection') window.ISHARA_COLLECTION_LAYOUT = LAYOUTS[cat] || 'showroom';
   if (PAGE === 'product' && BY[pid]) cfgPage = { slug: 'product.single', id: pid, parent: { url: 'store/c' + BY[pid].cat } };
   if (PAGE === 'cart') cfgPage = { slug: 'cart' };
   if (PAGE === 'checkout') cfgPage = { slug: 'checkout' };
@@ -166,10 +168,6 @@
   }
 
   function collection() {
-    $$('[data-lay]').forEach(function (b) {
-      b.setAttribute('aria-pressed', b.getAttribute('data-lay') === window.ISHARA_COLLECTION_LAYOUT);
-      b.addEventListener('click', function () { save('ish_coll_layout', b.getAttribute('data-lay')); location.reload(); });
-    });
     var offersOnly = HASH === 'offers';
     var base = P.filter(function (p) { return cat ? p.cat === cat : (offersOnly ? p.is_on_sale : true); });
     var c = CATS.filter(function (x) { return x.id === cat; })[0];
