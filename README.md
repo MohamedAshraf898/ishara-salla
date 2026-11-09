@@ -26,6 +26,13 @@ The preview shell lives in `assets/` (`shop.css`, `shop.js`, `products.js`) and 
 | `products/ishara-electronics-products.csv` | Same products as CSV |
 | `products/ishara-product-photos.zip` | Product photos (1200×1200, named by SKU) |
 
+## Shopping helpers
+
+`CONFIG.shopping` in the JS adds store-wide interactions on top of Raed:
+free-shipping progress bar on the cart page (set `threshold` to match your Salla shipping rule),
+a sticky buy bar on product pages that presses the theme's own add-to-cart button,
+recently viewed products, wishlist hearts on the custom sections' cards, and a back-to-top button.
+
 ## Category page
 
 On category pages (`product.index`) the JS adds a banner at the top: the category name, live stats (product count, lowest price, how many are on sale), a few product photos, and quick links to the other categories. Turn it off or change the text in `CONFIG.collection`.

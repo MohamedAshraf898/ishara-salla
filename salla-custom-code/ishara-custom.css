@@ -400,3 +400,33 @@ custom-salla-product-card:hover .ish-qv,.ish-qv:focus-visible{opacity:1;transfor
 
 /* narrow screens: let grid/flex children shrink instead of widening the page */
 .ish-setup>*,.ish-quiz>*,.ish-fbt>*,.ish-calc>*,.ish-scene--grid>*,.ish-row__mid{min-width:0}
+
+/* ================= shopping helpers ================= */
+.ish-card .ish-heart{position:absolute;top:16px;left:16px;z-index:2}
+.ish-heart{width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.94);display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 12px rgba(11,18,32,.12);padding:0}
+.ish-heart svg{width:18px;height:18px;fill:none;stroke:var(--ish-ink);stroke-width:1.8}
+.ish-heart[aria-pressed="true"] svg{fill:#E5304B;stroke:#E5304B}
+.ish-heart:disabled{opacity:.6}
+.ish-freeship{padding:16px 0 0}
+.ish-meter{display:flex;flex-direction:column;gap:8px;background:var(--ish-cloud);border-radius:16px;padding:14px 18px;font-size:14px}
+.ish-meter b{font-variant-numeric:tabular-nums}
+.ish-meter i{display:block;height:8px;border-radius:4px;background:#fff;overflow:hidden}
+.ish-meter i b{display:block;height:100%;border-radius:4px;background:var(--ish-primary);transition:width .4s}
+.ish-meter.is-done{color:var(--ish-success);font-weight:700}
+.ish-meter.is-done i b{background:var(--ish-success)}
+.ish-sticky{position:fixed;inset:auto 0 0;z-index:90;background:#fff;border-top:1px solid var(--ish-line);box-shadow:0 -10px 30px rgba(11,18,32,.08);padding-bottom:env(safe-area-inset-bottom,0px)}
+.ish-sticky__in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px max(16px,env(safe-area-inset-left,0px)) 10px max(16px,env(safe-area-inset-right,0px))}
+.ish-sticky img{width:48px;height:48px;border-radius:10px;object-fit:cover;flex:none;background:var(--ish-cloud)}
+.ish-sticky__txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.4}
+.ish-sticky__txt span{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ish-sticky__txt b{color:var(--ish-primary);font-variant-numeric:tabular-nums}
+.ish-sticky .ish-btn{flex:none;min-width:150px}
+body.ish-has-sticky{padding-bottom:72px}
+.ish-top{position:fixed;z-index:85;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));width:44px;height:44px;border-radius:50%;border:1px solid var(--ish-line);background:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 20px rgba(11,18,32,.12);padding:0}
+.ish-top svg{width:20px;height:20px;fill:none;stroke:var(--ish-ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+body.ish-has-mbar .ish-top{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+body.ish-has-sticky .ish-top{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+@media (max-width:767px){
+  .ish-sticky__txt span{display:none}
+  .ish-sticky .ish-btn{flex:1;min-width:0}
+}

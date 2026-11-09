@@ -99,7 +99,21 @@
     // a few product photos and quick links to the other categories.
     collection: { enabled: true, eyebrow: 'تسوّق حسب القسم', text: 'منتجات أصلية، توصيل سريع، وتقسيط بدون فوائد.', chips: true, photos: true },
 
-    mobileBar: { enabled: true }
+    mobileBar: { enabled: true },
+
+    // Shopping helpers that work across the store
+    shopping: {
+      // Progress bar on the cart page: "add X more for free shipping". Use the same amount as your Salla shipping rule.
+      freeShipping: { enabled: true, threshold: 500, text: 'أضف {left} وتحصل على شحن مجاني', done: 'مبروك! طلبك شحنه مجاني' },
+      // Product page: a buy bar that appears when the theme's add-to-cart button scrolls out of view.
+      // It presses the theme's own button, so options and quantity still work.
+      stickyBar: { enabled: true, button: 'salla-add-product-button, .s-add-product-button-main, .product-form button[type=submit]' },
+      // Product page: products this visitor opened before (kept in their browser).
+      recentlyViewed: { enabled: true, title: 'شاهدتها مؤخراً', limit: 4 },
+      // Heart button on the product cards of the custom sections (uses Salla's wishlist; asks guests to log in).
+      wishlistHearts: true,
+      backToTop: true
+    }
   };
 
   /* ===================== 1b) BASIC HOME SECTIONS — edit freely =====================
@@ -201,7 +215,7 @@
     var d = discount(p);
     return '<article class="ish-card">' +
       '<a class="ish-card__img" href="' + esc(p.url) + '"><img src="' + esc(imgOf(p)) + '" alt="' + esc(p.name) + '" loading="lazy"></a>' +
-      (d ? '<span class="ish-badge">خصم ' + d + '%</span>' : '') +
+      (d ? '<span class="ish-badge">خصم ' + d + '%</span>' : '') + wishBtn(p.id) +
       '<a class="ish-card__name" href="' + esc(p.url) + '">' + esc(p.name) + '</a>' +
       '<div class="ish-price"><b>' + money(p.price) + '</b>' + (d ? '<s>' + money(p.regular_price) + '</s>' : '') + '</div>' +
       (extra || '') +
@@ -597,6 +611,8 @@
       if (CONFIG.product.fbt.enabled && catId) fbt(top, cur, catId);
       if (CONFIG.product.installments.enabled || CONFIG.product.tradeIn.enabled) calc(top, cur);
       if (CONFIG.product.faq.enabled) faq(slotEnd);
+      stickyBar(cur);
+      recentlyViewed(cur, slotEnd);
     });
   }
   function fbt(holder, cur, catId) {
@@ -765,6 +781,93 @@
   }
 
 
+
+  /* ===================== 6b) SHOPPING HELPERS ===================== */
+  function local(k, v) {
+    try { if (v === undefined) { var x = localStorage.getItem(k); return x ? JSON.parse(x) : null; } localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; }
+  }
+  var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg>';
+  function wished() { return (local('ish_wished') || []).map(String); }
+  function wishBtn(id) {
+    if (!CONFIG.shopping || !CONFIG.shopping.wishlistHearts) return '';
+    var on = wished().indexOf(String(id)) > -1;
+    return '<button type="button" class="ish-heart" data-ish-wish="' + id + '" aria-pressed="' + on + '" aria-label="' + (on ? 'إزالة من المفضلة' : 'أضف للمفضلة') + '">' + HEART + '</button>';
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-ish-wish]'); if (!b) return;
+    e.preventDefault();
+    var id = b.getAttribute('data-ish-wish'), list = wished(), on = list.indexOf(id) > -1;
+    var call; try { call = on ? salla.wishlist.remove(+id) : salla.wishlist.add(+id); } catch (err) { call = null; }
+    if (!call || typeof call.then !== 'function') return;
+    b.disabled = true;
+    call.then(function () {
+      list = wished(); if (on) list.splice(list.indexOf(id), 1); else list.push(id); local('ish_wished', list);
+      $$('[data-ish-wish="' + id + '"]').forEach(function (x) { x.setAttribute('aria-pressed', !on); x.setAttribute('aria-label', on ? 'أضف للمفضلة' : 'إزالة من المفضلة'); });
+    }).catch(warn).then(function () { b.disabled = false; });
+  });
+
+  function cartAmount(r) {
+    var c = r && (r.cart || (r.data && (r.data.cart || r.data)) || r);
+    var v = c && (c.sub_total != null ? c.sub_total : c.total);
+    return num(v && v.amount != null ? v.amount : v);
+  }
+  function freeShipping() {
+    var c = CONFIG.shopping.freeShipping; if (!c || !c.enabled || !c.threshold) return;
+    var main = $('.app-inner > main') || $('main'); if (!main) return;
+    var sec = section('ish-freeship', ''); main.insertBefore(sec, main.firstChild);
+    var draw = function (amount) {
+      var left = c.threshold - amount, pct = Math.max(0, Math.min(100, amount / c.threshold * 100));
+      if (amount <= 0) { sec.hidden = true; return; }
+      sec.hidden = false;
+      sec.firstChild.innerHTML = '<div class="ish-meter' + (left <= 0 ? ' is-done' : '') + '" role="status"><span>' + (left > 0 ? esc(c.text).replace('{left}', '<b>' + money(Math.ceil(left)) + '</b>') : esc(c.done)) + '</span>' +
+        '<i aria-hidden="true"><b style="width:' + pct + '%"></b></i></div>';
+    };
+    try { salla.cart.details().then(function (r) { draw(cartAmount(r)); }).catch(warn); } catch (e) { warn(e); }
+    try { salla.cart.event.onUpdated(function (r) { draw(cartAmount(r)); }); } catch (e) {}
+  }
+
+  function stickyBar(cur) {
+    var c = CONFIG.shopping.stickyBar; if (!c || !c.enabled || !window.IntersectionObserver) return;
+    var main = $('.app-inner > main') || $('main');
+    var btnHost = main && $(c.button, main); if (!btnHost) return;
+    var target = btnHost.matches('button') ? btnHost : (btnHost.querySelector('button') || btnHost);
+    var bar = document.createElement('div'); bar.className = 'ish ish-sticky'; bar.hidden = true;
+    bar.innerHTML = '<div class="ish-sticky__in"><img src="' + esc(imgOf(cur)) + '" alt=""><div class="ish-sticky__txt"><span>' + esc(cur.name) + '</span><b>' + money(cur.price) + '</b></div>' +
+      '<button type="button" class="ish-btn">' + (cur.has_options ? 'اختر الخيارات' : 'أضف للسلة') + '</button></div>';
+    document.body.appendChild(bar);
+    $('button', bar).addEventListener('click', function () {
+      if (cur.has_options) { btnHost.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+      target.click();
+    });
+    new IntersectionObserver(function (es) {
+      var gone = !es[0].isIntersecting && es[0].boundingClientRect.top < 0;
+      bar.hidden = !gone; document.body.classList.toggle('ish-has-sticky', gone);
+    }).observe(btnHost);
+  }
+
+  function recentlyViewed(cur, after) {
+    var c = CONFIG.shopping.recentlyViewed; if (!c || !c.enabled) return;
+    var id = String(cur.id), seen = (local('ish_seen') || []).map(String).filter(function (x) { return x !== id; });
+    local('ish_seen', [id].concat(seen).slice(0, 12));
+    seen = seen.slice(0, c.limit); if (!seen.length || !after) return;
+    var sec = section('', head('', c.title) + '<div data-ish-seen></div>');
+    after.parentNode.insertBefore(sec, after.nextSibling);
+    Promise.all(seen.map(details)).then(function (ps) {
+      ps = ps.filter(function (p) { return p && p.name; });
+      if (!ps.length) { sec.remove(); return; }
+      $('[data-ish-seen]', sec).innerHTML = rowSlider(ps.map(function (p) { return card(p); }).join(''));
+    });
+  }
+
+  function backToTop() {
+    if (!CONFIG.shopping.backToTop) return;
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'ish-top'; b.hidden = true; b.setAttribute('aria-label', 'للأعلى');
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+    b.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    document.body.appendChild(b);
+    var t; window.addEventListener('scroll', function () { if (t) return; t = setTimeout(function () { t = 0; b.hidden = window.scrollY < 900; }, 120); }, { passive: true });
+  }
+
   /* ===================== 5b) CATEGORY (COLLECTION) PAGE ===================== */
   function collectionPage() {
     var c = CONFIG.collection; if (!c || !c.enabled) return;
@@ -818,6 +921,8 @@
       new MutationObserver(function (ms) { ms.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) enhanceCards(n.matches && n.matches('custom-salla-product-card') ? n.parentNode : n); }); }); })
         .observe(document.body, { childList: true, subtree: true });
     }
+    if (slug === 'cart' || document.body.classList.contains('cart')) freeShipping();
+    backToTop();
     mobileBar();
   }
   if (window.salla && typeof salla.onReady === 'function') salla.onReady(start);

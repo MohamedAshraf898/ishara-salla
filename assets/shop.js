@@ -45,11 +45,11 @@
   }
 
   /* ---------- wishlist ---------- */
-  function wish() { return load('ish_wish', []).filter(function (id) { return BY[id]; }); }
+  function wish() { return load('ish_wished', []).map(Number).filter(function (id) { return BY[id]; }); }
   function toggleWish(id) {
     var w = wish(), i = w.indexOf(+id);
     if (i > -1) w.splice(i, 1); else w.push(+id);
-    save('ish_wish', w); paintCounts();
+    save('ish_wished', w.map(String)); paintCounts();
     $$('[data-wish="' + id + '"]').forEach(function (b) { b.setAttribute('aria-pressed', i < 0); b.setAttribute('aria-label', i < 0 ? 'إزالة من المفضلة' : 'أضف للمفضلة'); });
     say(i < 0 ? 'أُضيف للمفضلة' : 'أُزيل من المفضلة', i < 0 ? ['المفضلة', 'wishlist.html'] : null);
     if (PAGE === 'wishlist') renderWishlist();
@@ -112,9 +112,14 @@
     notify: { info: function (m) { say(m); } },
     cart: {
       addItem: function (o) { cartAdd(o.id, o.quantity || 1); var p = BY[o.id]; say('أُضيف للسلة: ' + (p ? p.name : 'منتج'), ['عرض السلة', 'cart.html']); return Promise.resolve({ data: { count: cartCount() } }); },
-      event: { onUpdated: function (f) { cartFns.push(function () { f({ count: cartCount() }); }); } }
+      details: function () { return Promise.resolve({ data: { cart: { sub_total: totals(cart()).sub, count: cartCount() } } }); },
+      event: { onUpdated: function (f) { cartFns.push(function () { f({ cart: { sub_total: totals(cart()).sub, count: cartCount() } }); }); } }
     },
     product: { event: { onPriceUpdated: function () {} } },
+    wishlist: {
+      add: function (id) { setTimeout(paintCounts, 50); say('أُضيف للمفضلة', ['المفضلة', 'wishlist.html']); return Promise.resolve({ data: { id: id } }); },
+      remove: function (id) { setTimeout(function () { paintCounts(); if (PAGE === 'wishlist') renderWishlist(); }, 50); say('أُزيل من المفضلة'); return Promise.resolve({ data: { id: id } }); }
+    },
     api: { product: {
       fetch: function (o) { return new Promise(function (r) { setTimeout(function () { r({ data: list(o) }); }, 60); }); },
       getDetails: function (id) { return Promise.resolve({ data: BY[id] }); },
@@ -201,7 +206,7 @@
         '<span class="muted" style="font-size:13px;margin-top:-10px">السعر شامل ضريبة القيمة المضافة</span>' +
         '<div class="pp-inst"><span><span class="tag tag--tabby">tabby</span> قسّمها على 4 دفعات: <b class="num">' + fmt(Math.round(p.price / 4 * 100) / 100) + '</b> بدون فوائد</span><span><span class="tag tag--tamara">tamara</span> أو على 3 دفعات: <b class="num">' + fmt(Math.round(p.price / 3 * 100) / 100) + '</b></span></div>' +
         '<div class="pp-buy"><div class="qty" role="group" aria-label="الكمية"><button type="button" data-q="1" aria-label="زيادة">+</button><input id="qty" type="number" min="1" max="10" value="1" aria-label="الكمية" inputmode="numeric"><button type="button" data-q="-1" aria-label="إنقاص">−</button></div>' +
-          '<button type="button" class="btn" id="addBtn">أضف للسلة</button><button type="button" class="btn btn--dark" id="buyBtn">اشترِ الآن</button>' + heartBtn(p, 'pp-heart') + '</div>' +
+          '<salla-add-product-button style="display:flex;flex:1;min-width:140px"><button type="button" class="btn" id="addBtn" style="flex:1">أضف للسلة</button></salla-add-product-button><button type="button" class="btn btn--dark" id="buyBtn">اشترِ الآن</button>' + heartBtn(p, 'pp-heart') + '</div>' +
         '<div class="pp-perks"><div><b>توصيل سريع</b><span class="muted">1–3 أيام</span></div><div><b>ضمان الوكيل</b><span class="muted">منتج أصلي</span></div><div><b>استرجاع</b><span class="muted">خلال 7 أيام</span></div></div>' +
         '<div class="box"><h2 style="font-size:17px;margin:0 0 10px">أبرز المواصفات</h2><ul class="pp-specs">' + specs.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul></div>' +
         '<table class="pp-table"><tr><th>الماركة</th><td dir="ltr" style="text-align:right">' + esc(p.brand) + '</td></tr><tr><th>القسم</th><td><a href="collection.html#c' + p.cat + '">' + esc(c.name) + '</a></td></tr><tr><th>رمز المنتج</th><td dir="ltr" style="text-align:right">' + esc(p.sku) + '</td></tr></table>' +
@@ -215,17 +220,10 @@
     z.addEventListener('click', function () { z.classList.toggle('zoom'); });
     z.addEventListener('mousemove', function (e) { var r = z.getBoundingClientRect(); $('img', z).style.transformOrigin = ((e.clientX - r.left) / r.width * 100) + '% ' + ((e.clientY - r.top) / r.height * 100) + '%'; });
     z.addEventListener('mouseleave', function () { z.classList.remove('zoom'); });
-    // sticky buy bar on phones
-    var st = $('#ppSticky'); st.innerHTML = '<div style="display:flex;flex-direction:column;line-height:1.3"><span class="muted" style="font-size:12px">السعر</span><b>' + fmt(p.price) + '</b></div><button type="button" class="btn" data-ish-add="' + p.id + '">أضف للسلة</button>';
-    st.hidden = false; document.body.classList.add('has-sticky');
     // related: same category first, then offers
     var rel = P.filter(function (x) { return x.cat === p.cat && x.id !== p.id; });
     rel = rel.concat(P.filter(function (x) { return x.is_on_sale && x.cat !== p.cat; })).slice(0, 4);
     $('#related').innerHTML = rel.map(card).join('');
-    // recently viewed
-    var seen = load('ish_seen', []).filter(function (id) { return id !== p.id && BY[id]; });
-    save('ish_seen', [p.id].concat(seen).slice(0, 8));
-    if (seen.length) { $('#seenBlock').hidden = false; $('#seen').innerHTML = seen.slice(0, 4).map(function (id) { return card(BY[id]); }).join(''); }
   }
 
   function summaryRows(t) {
@@ -243,14 +241,12 @@
       var lines = cart(), t = totals(lines);
       $('#cartTitle').textContent = lines.length ? 'سلة المشتريات (' + plural(cartCount()) + ')' : 'سلة المشتريات';
       if (!lines.length) { root.innerHTML = '<div style="grid-column:1/-1">' + empty('cart', 'سلتك فاضية', 'تصفّح الأقسام وأضف اللي يعجبك.', ['ابدأ التسوق', 'index.html']) + '</div>'; return; }
-      var left = SHIP_FREE - (t.sub - t.disc);
       root.innerHTML = '<div class="box" style="min-width:0">' + lines.map(function (l) {
         var p = BY[l.id];
         return '<div class="cline"><a href="' + p.url + '"><img src="' + p.image.url + '" alt=""></a><div style="min-width:0"><h3><a href="' + p.url + '">' + esc(p.name) + '</a></h3><span class="muted num" style="font-size:13px">' + fmt(p.price) + (off(p) ? ' · <s>' + fmt(p.regular_price) + '</s>' : '') + '</span></div>' +
           '<div class="r"><b>' + fmt(p.price * l.qty) + '</b><div class="qty qty--sm" role="group" aria-label="كمية ' + esc(p.name) + '"><button type="button" data-set="' + p.id + '" data-v="' + (l.qty + 1) + '" aria-label="زيادة">+</button><input value="' + l.qty + '" readonly aria-label="الكمية"><button type="button" data-set="' + p.id + '" data-v="' + (l.qty - 1) + '" aria-label="إنقاص">−</button></div><button type="button" class="rm" data-set="' + p.id + '" data-v="0">حذف</button></div></div>';
       }).join('') + '</div>' +
         '<aside class="box sum"><h2>ملخص الطلب</h2>' +
-        '<div class="ship-meter">' + (left > 0 ? '<span>أضف <b class="num">' + fmt(left) + '</b> وتحصل على شحن مجاني</span>' : '<span style="color:var(--shell-ok);font-weight:700">مبروك! طلبك شحنه مجاني</span>') + '<i><b style="width:' + Math.min(100, (t.sub - t.disc) / SHIP_FREE * 100) + '%"></b></i></div>' +
         summaryRows(t) +
         '<form class="coupon" id="cpForm"><input class="inp" id="cp" placeholder="كود الخصم" aria-label="كود الخصم" value="' + esc(t.code) + '" autocomplete="off"><button class="btn btn--ghost" type="submit">' + (t.code ? 'إزالة' : 'تطبيق') + '</button></form><span class="msg" id="cpMsg">' + (t.code ? '<span class="ok">تم تطبيق ' + esc(COUPONS[t.code].label) + '</span>' : 'جرّب الكود <b dir="ltr">ISHARA10</b>') + '</span>' +
         '<a class="btn btn--block" href="checkout.html">إتمام الطلب</a>' +
