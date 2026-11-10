@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Ishara custom code (Salla preview tester)
 // @namespace    ishara
-// @version      2.0
+// @version      2.1
 // @description  Injects ishara-custom.css + ishara-custom.js into the Salla store to preview them before a custom domain is linked
 // @match        https://demostore.salla.sa/*
 // @match        https://salla.sa/*
@@ -59,6 +59,8 @@
       // The sections go right after the first of these blocks (your hero banner).
       // If none exists, they go at the top of the home page.
       insertAfter: '.s-block--hero-slider, .s-block--photos-slider, .s-block--fixed-banner',
+      // The theme's "latest products" block moves up to right after the hero banner. '' = leave it where it is.
+      latestFirst: '.s-block--latest-products',
 
       flashSale: {
         enabled: true,
@@ -1315,6 +1317,8 @@
         flashSale(holder); setup(holder); quiz(holder); compare(holder);   // advanced
         var bh = document.createElement('div'); bh.className = 'ish-home ish-basics';
         holder.parentNode.insertBefore(bh, holder.nextSibling); basics(bh);  // basics
+        var latest = CONFIG.home.latestFirst && $(CONFIG.home.latestFirst, mainEl);
+        if (latest && !latest.closest('.ish')) holder.parentNode.insertBefore(latest, holder);   // new products right after the hero
       }
     }
     if (slug === 'product.single' || document.body.classList.contains('product-single')) productPage();
