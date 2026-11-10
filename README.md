@@ -33,6 +33,19 @@ free-shipping progress bar on the cart page (set `threshold` to match your Salla
 a sticky buy bar on product pages that presses the theme's own add-to-cart button,
 recently viewed products, wishlist hearts on the custom sections' cards, and a back-to-top button.
 
+## Logo
+
+The `brand/` folder has the store logo: a signal icon (إشارة means "signal") in the store blue with the orange dot, next to the name in Readex Pro.
+
+| File | Use |
+|---|---|
+| `ishara-logo.png` | Main logo, dark text, transparent background: upload it in Salla as the store logo |
+| `ishara-logo-white.png` | Same logo with white text, for dark backgrounds |
+| `ishara-icon-512.png` | The icon alone, 512×512: Salla's favicon / store icon |
+| `ishara-icon.svg` | The icon as a vector file |
+
+On Salla the logo is set in the dashboard (store settings), not in the custom code. The preview uses the same icon in the header, footer and browser tab.
+
 ## Background photos
 
 The dark sections use photos from [Unsplash](https://unsplash.com) instead of color gradients: the hero slides, the two banners, the wide banner, the flash sale, the special prices section, the story section and the category banner. A dark tint goes over each photo so the text stays readable.

@@ -23,7 +23,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:50;background:var(--shell-bg)}
 .top__in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:20px;padding-block:12px}
 .logo{font-family:var(--f-display);font-weight:800;font-size:24px;text-decoration:none;display:flex;align-items:center;gap:8px;flex:none}
-.logo i{width:30px;height:30px;border-radius:9px;background:var(--color-primary);display:grid;place-items:center;color:#fff;font-style:normal;font-size:15px}
+.logo__mark{width:36px;height:36px;flex:none;display:block}
 .search{position:relative;flex:1;min-width:0;max-width:560px;margin:0}
 .search input{width:100%;box-sizing:border-box;font:inherit;font-size:14px;border:1px solid var(--shell-line);background:var(--shell-soft);border-radius:12px;padding:10px 40px 10px 14px;color:var(--shell-ink)}
 .search input:focus{background:var(--shell-bg);border-color:var(--color-primary);outline:none}
