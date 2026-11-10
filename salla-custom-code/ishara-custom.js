@@ -589,7 +589,10 @@
     }
 
     if (B.features.enabled && B.features.items.length) {
-      add('ish-feats', '<div class="ish-featrow">' + B.features.items.map(function (f) { return '<div class="ish-feat"><span class="ish-feat__ico" aria-hidden="true">' + esc(f[0]) + '</span><div><b>' + esc(f[1]) + '</b><small>' + esc(f[2]) + '</small></div></div>'; }).join('') + '</div>');
+      var sf = add('ish-feats', '<div class="ish-featrow">' + B.features.items.map(function (f) { return '<div class="ish-feat"><span class="ish-feat__ico" aria-hidden="true">' + esc(f[0]) + '</span><div><b>' + esc(f[1]) + '</b><small>' + esc(f[2]) + '</small></div></div>'; }).join('') + '</div>');
+      // goes at the end of the home page, right before the footer
+      var mainEl = holder.closest('main') || holder.parentNode;
+      if (mainEl) mainEl.appendChild(sf);
     }
 
     if (B.offers.enabled) {
