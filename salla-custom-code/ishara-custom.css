@@ -45,8 +45,8 @@
 .ish-card .ish-btn{width:100%}
 
 /* flash sale */
-.ish-flash{background:linear-gradient(120deg,#1a0a02,var(--ish-ink) 60%);color:#fff;overflow:hidden;isolation:isolate}
-.ish-flash::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(40% 80% at 85% 20%,rgba(255,106,26,.45),transparent 70%),radial-gradient(30% 60% at 10% 90%,rgba(0,194,255,.25),transparent 70%)}
+.ish-flash{background:var(--ish-ink);color:#fff;overflow:hidden;isolation:isolate}
+.ish-flash::before{content:"";position:absolute;inset:0;z-index:-1;background:rgba(6,9,16,.66)}
 .ish-flash .ish-eyebrow{color:#FF9E66}
 .ish-cd{display:flex;gap:8px}
 .ish-cd span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;min-width:62px;padding:8px 6px;text-align:center;font-size:24px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.1}
@@ -58,7 +58,7 @@
 
 /* shop the setup */
 .ish-setup{display:grid;grid-template-columns:1fr 340px;gap:22px}
-.ish-scene{position:relative;min-height:520px;border-radius:28px;overflow:hidden;background:radial-gradient(60% 70% at 50% 35%,#1b2a55,#05070c 75%);isolation:isolate}
+.ish-scene{position:relative;min-height:520px;border-radius:28px;overflow:hidden;background:#0B1220;isolation:isolate}
 .ish-scene>img.ish-scene__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1}
 .ish-pin{position:absolute;padding:0;line-height:1;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:#fff;color:var(--ish-primary);display:grid;place-items:center;font-weight:900;font-size:18px;border:0;box-shadow:0 0 0 6px rgba(255,255,255,.22);z-index:3;cursor:pointer}
 .ish-pin::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid #fff;animation:ish-ping 2s infinite}
@@ -230,7 +230,7 @@ custom-salla-product-card:hover .ish-qv,.ish-qv:focus-visible{opacity:1;transfor
 .ish-hero{padding:20px 0 8px}
 .ish-slider{position:relative;height:440px;border-radius:28px;overflow:hidden;background:var(--ish-ink)}
 .ish-slide{position:absolute;inset:0;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:20px;padding:40px 56px;color:#fff;opacity:0;visibility:hidden;transition:opacity .7s,visibility .7s;isolation:isolate}
-.ish-slide::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(45% 80% at 25% 50%,rgba(255,255,255,.14),transparent 70%)}
+.ish-slide::before{content:"";position:absolute;inset:0;z-index:-1;background:rgba(6,9,16,.55)}
 .ish-slide.on{opacity:1;visibility:visible}
 .ish-slide__txt{display:flex;flex-direction:column;gap:14px;max-width:520px}
 .ish-slide__txt h2{font-size:44px;line-height:1.2;font-weight:900;margin:0;color:#fff}
@@ -251,7 +251,7 @@ custom-salla-product-card:hover .ish-qv,.ish-qv:focus-visible{opacity:1;transfor
 .ish-catrow{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 8px}
 .ish-catrow::-webkit-scrollbar{display:none}
 .ish-cat{flex:0 0 auto;width:112px;display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none;color:var(--ish-text);font-weight:700;font-size:14px;text-align:center}
-.ish-cat__img{width:96px;height:96px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:linear-gradient(135deg,rgba(23,70,209,.10),rgba(0,194,255,.14));border:2px solid var(--ish-line);transition:border-color .2s,transform .2s}
+.ish-cat__img{width:96px;height:96px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:rgba(23,70,209,.08);border:2px solid var(--ish-line);transition:border-color .2s,transform .2s}
 .ish-cat__img img{width:100%;height:100%;object-fit:cover}
 .ish-cat__img b{font-size:34px;font-weight:900;color:var(--ish-primary)}
 .ish-cat:hover .ish-cat__img{border-color:var(--ish-primary);transform:translateY(-3px)}
@@ -277,7 +277,7 @@ custom-salla-product-card:hover .ish-qv,.ish-qv:focus-visible{opacity:1;transfor
 .ish-banners{padding:16px 0 36px}
 .ish-bannergrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .ish-banner{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:230px;border-radius:24px;overflow:hidden;padding:28px 32px;color:#fff;text-decoration:none;isolation:isolate}
-.ish-banner::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(50% 100% at 15% 50%,rgba(255,255,255,.25),transparent 60%)}
+.ish-banner::before{content:"";position:absolute;inset:0;z-index:-1;background:rgba(6,9,16,.5)}
 .ish-banner__txt{display:flex;flex-direction:column;gap:8px;max-width:60%;position:relative;z-index:1}
 .ish-banner__txt h3{font-size:26px;font-weight:900;margin:0;color:#fff}
 .ish-banner__txt p{margin:0;opacity:.9}
@@ -298,7 +298,7 @@ custom-salla-product-card:hover .ish-qv,.ish-qv:focus-visible{opacity:1;transfor
 
 /* dark products */
 .ish-dark{background:#05070c;color:#fff;overflow:hidden;isolation:isolate}
-.ish-dark::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(40% 70% at 15% 30%,rgba(255,106,26,.3),transparent 70%),radial-gradient(40% 70% at 85% 80%,rgba(0,194,255,.25),transparent 70%)}
+.ish-dark::before{content:"";position:absolute;inset:0;z-index:-1;background:rgba(5,7,12,.8)}
 .ish-dark .ish-eyebrow{color:#FF9E66}
 .ish-dark .ish-more{color:var(--ish-cyan)}
 
@@ -309,7 +309,7 @@ custom-salla-product-card:hover .ish-qv,.ish-qv:focus-visible{opacity:1;transfor
 
 /* story */
 .ish-story{background:var(--ish-ink);color:#fff;text-align:center;padding:90px 0;overflow:hidden;isolation:isolate}
-.ish-story::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(50% 90% at 50% 100%,rgba(23,70,209,.75),transparent 70%)}
+.ish-story::before{content:"";position:absolute;inset:0;z-index:-1;background:rgba(8,13,26,.68)}
 .ish-story__in{display:flex;flex-direction:column;align-items:center;gap:16px}
 .ish-story__in .ish-pill{align-self:center;color:var(--ish-cyan)}
 .ish-story h2{font-size:42px;font-weight:900;margin:0;max-width:18ch;color:#fff}
@@ -317,7 +317,7 @@ custom-salla-product-card:hover .ish-qv,.ish-qv:focus-visible{opacity:1;transfor
 .ish-stats{display:flex;gap:44px;margin:8px 0}
 .ish-stats b{display:block;font-size:30px;font-weight:900;direction:ltr}
 .ish-stats span{opacity:.6}
-.ish-story .ish-btn--ghost{color:#fff;text-decoration:none;padding:12px 26px}
+.ish-story .ish-btn--ghost{color:#fff;background:transparent;box-shadow:inset 0 0 0 1.5px #fff;text-decoration:none;padding:12px 26px}
 
 /* brands */
 .ish-brandrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px}
@@ -369,8 +369,8 @@ custom-salla-product-card:hover .ish-qv,.ish-qv:focus-visible{opacity:1;transfor
 
 /* ================= category (collection) banner ================= */
 .ish-coll{padding:20px 0 6px}
-.ish-coll__band{position:relative;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;gap:24px;min-height:260px;border-radius:26px;overflow:hidden;padding:34px 40px;color:#fff;background:linear-gradient(120deg,var(--ish-ink),#16244d);isolation:isolate}
-.ish-coll__band::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(40% 90% at 85% 40%,rgba(0,194,255,.35),transparent 70%),radial-gradient(35% 80% at 10% 100%,rgba(23,70,209,.6),transparent 70%)}
+.ish-coll__band{position:relative;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;gap:24px;min-height:260px;border-radius:26px;overflow:hidden;padding:34px 40px;color:#fff;background:var(--ish-ink);isolation:isolate}
+.ish-coll__band::before{content:"";position:absolute;inset:0;z-index:-1;background:rgba(8,13,26,.66)}
 .ish-coll__txt{display:flex;flex-direction:column;gap:10px;min-width:0}
 .ish-coll__txt .ish-pill{color:var(--ish-cyan)}
 .ish-coll__txt h1{font-size:40px;line-height:1.2;font-weight:900;margin:0;color:#fff;text-wrap:balance}
@@ -450,7 +450,7 @@ body.ish-has-sticky .ish-top{bottom:calc(88px + env(safe-area-inset-bottom,0px))
 .ish-show__picks{margin-top:28px}
 .ish-show__bento{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:auto auto;gap:16px}
 .ish-spot{position:relative;display:grid;grid-template-columns:44% minmax(0,1fr);align-items:center;gap:16px;background:var(--ish-cloud);border-radius:var(--ish-radius);padding:14px;color:var(--ish-text);min-width:0}
-.ish-spot--big{grid-row:span 2;grid-template-columns:1fr;align-content:start;padding:18px;background:linear-gradient(160deg,#EAF0FF,var(--ish-cloud) 60%)}
+.ish-spot--big{grid-row:span 2;grid-template-columns:1fr;align-content:start;padding:18px;background:#EEF2FC}
 .ish-spot__img{display:block;aspect-ratio:1/1;max-width:100%;border-radius:16px;overflow:hidden;background:#fff}
 .ish-spot--big{grid-template-rows:minmax(0,1fr) auto}
 .ish-spot--big .ish-spot__img{position:relative;aspect-ratio:auto;height:100%;min-height:240px}
@@ -483,7 +483,7 @@ body.ish-has-sticky .ish-top{bottom:calc(88px + env(safe-area-inset-bottom,0px))
 .ish-ctile{position:relative;display:flex;align-items:flex-end;aspect-ratio:16/10;max-width:100%;border-radius:18px;overflow:hidden;background:var(--ish-ink);color:#fff;text-decoration:none;isolation:isolate}
 .ish-ctile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .4s}
 .ish-ctile::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,rgba(11,18,32,.8),rgba(11,18,32,.05) 60%)}
-.ish-ctile i{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;font-size:48px;font-weight:900;color:rgba(255,255,255,.18);z-index:-1;background:linear-gradient(135deg,var(--ish-ink),#1B2A55)}
+.ish-ctile i{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;font-size:48px;font-weight:900;color:rgba(255,255,255,.18);z-index:-1;background:var(--ish-ink)}
 .ish-ctile span{padding:14px 16px;font-weight:800;font-size:16px}
 .ish-ctile:hover img{transform:scale(1.05)}
 @media (max-width:991px){
@@ -622,3 +622,6 @@ html.ish-noscroll{overflow:hidden}
   .ish-gal__track{border-radius:18px}
   .ish-viewer__nav{top:auto;bottom:calc(8px + env(safe-area-inset-bottom,0px));transform:none}
 }
+
+/* background photos (CONFIG.photos, slides and banners) */
+.ish-photo{background-color:var(--ish-ink);background-size:cover;background-position:center;background-repeat:no-repeat}

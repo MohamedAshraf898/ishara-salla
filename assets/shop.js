@@ -106,6 +106,10 @@
   // Laptops (2) use the banner layout; phones and every other category use the showroom layout.
   var LAYOUTS = { 2: 'banner' };
   if (PAGE === 'collection') window.ISHARA_COLLECTION_LAYOUT = LAYOUTS[cat] || 'showroom';
+  // preview only: background photos come from local copies of the same Unsplash photos,
+  // and the laptops banner gets a laptop photo (on the live store: CONFIG.photos.collections)
+  window.ISHARA_PHOTO_SRC = function (id) { return 'img/u/' + id + '.jpg'; };
+  if (PAGE === 'collection' && cat === 2) window.ISHARA_COLLECTION_PHOTO = '1603302576837-37561b2e2302';
   if (PAGE === 'product' && BY[pid]) cfgPage = { slug: 'product.single', id: pid, parent: { url: 'store/c' + BY[pid].cat } };
   if (PAGE === 'cart') cfgPage = { slug: 'cart' };
   // preview only: phones use the studio product page, every other category the theme's classic one

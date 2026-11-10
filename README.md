@@ -33,6 +33,14 @@ free-shipping progress bar on the cart page (set `threshold` to match your Salla
 a sticky buy bar on product pages that presses the theme's own add-to-cart button,
 recently viewed products, wishlist hearts on the custom sections' cards, and a back-to-top button.
 
+## Background photos
+
+The dark sections use photos from [Unsplash](https://unsplash.com) instead of color gradients: the hero slides, the two banners, the wide banner, the flash sale, the special prices section, the story section and the category banner. A dark tint goes over each photo so the text stays readable.
+
+Change them in `CONFIG.photos` (flash sale, special prices, story, category banner, and `collections` for a photo per category id) and in the `photo` field of each hero slide and banner. A value is an Unsplash photo id (the part after `photo-` in an `images.unsplash.com/photo-...` link) or any full image URL, for example a photo uploaded to your Salla store. An empty value gives a plain dark background. The images load from Unsplash's own servers, as Unsplash asks.
+
+In the preview the same photos are served as local copies (`img/u/`), because the Claude preview can't load images from other sites.
+
 ## Product page layouts
 
 The product page comes in two layouts. Pick one in `CONFIG.product.layout`, or set a layout for the products of some categories in `CONFIG.product.layouts` (by category id, for example `{ 123456: 'studio' }`).

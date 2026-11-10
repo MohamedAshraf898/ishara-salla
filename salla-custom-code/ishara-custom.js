@@ -10,6 +10,16 @@
 
   /* ===================== 1) SETTINGS — edit freely ===================== */
   var CONFIG = {
+    // Background photos for the dark sections (Unsplash). Each value is an Unsplash photo id, the part
+    // after "photo-" in images.unsplash.com/photo-..., or any full image URL. Empty = plain dark color.
+    // A dark tint is laid over each photo so the text on it stays readable.
+    photos: {
+      flash: '1626218174358-7769486c4b79',      // flash sale: RGB gaming desk
+      dark: '1518770660439-4636190af475',       // special prices: circuit board
+      story: '1510519138101-570d1dca3d66',      // our story: desk at night
+      collection: '1593305841991-05c297ba4575', // category banner (banner layout), any category
+      collections: {}                           // per category id, e.g. { 123456: '1603302576837-37561b2e2302' }
+    },
     home: {
       // The sections go right after the first of these blocks (your hero banner).
       // If none exists, they go at the top of the home page.
@@ -153,9 +163,9 @@
       enabled: true,            // only shown if your theme has no slider of its own
       autoplay: 6000,
       slides: [
-        { eyebrow: 'وصل حديثاً', title: 'تشكيلة الموسم الجديدة', text: 'قطع مختارة بعناية، وتوصيل سريع لكل مدن المملكة.', btn: 'تسوّق الآن', url: '', image: '', bg: 'linear-gradient(120deg,#0B1220,#1b2a55)' },
-        { eyebrow: 'عروض حصرية', title: 'خصومات تصل إلى 50%', text: 'على منتجات مختارة ولفترة محدودة.', btn: 'شوف العروض', url: '', image: '', bg: 'linear-gradient(120deg,#2a0f04,#7a2a0a)' },
-        { eyebrow: 'الأكثر طلباً', title: 'اختيارات عملائنا', text: 'المنتجات اللي الكل يسأل عنها.', btn: 'اكتشف المزيد', url: '', image: '', bg: 'linear-gradient(120deg,#062a2a,#0B1220)' }
+        { eyebrow: 'وصل حديثاً', title: 'تشكيلة الموسم الجديدة', text: 'قطع مختارة بعناية، وتوصيل سريع لكل مدن المملكة.', btn: 'تسوّق الآن', url: '', image: '', photo: '1531297484001-80022131f5a1' },
+        { eyebrow: 'عروض حصرية', title: 'خصومات تصل إلى 50%', text: 'على منتجات مختارة ولفترة محدودة.', btn: 'شوف العروض', url: '', image: '', photo: '1607083206968-13611e3d76db' },
+        { eyebrow: 'الأكثر طلباً', title: 'اختيارات عملائنا', text: 'المنتجات اللي الكل يسأل عنها.', btn: 'اكتشف المزيد', url: '', image: '', photo: '1616588589676-62b3bd4ff6d2' }
       ]
     },
     categories: { enabled: true, title: 'تسوّق حسب القسم', eyebrow: 'الأقسام', limit: 8 },
@@ -171,13 +181,13 @@
     banners: {
       enabled: true,
       items: [
-        { eyebrow: 'جديدنا', title: 'وصل حديثاً', text: 'أحدث القطع في المتجر', btn: 'تسوّق', url: '', image: '', bg: 'linear-gradient(135deg,#1746D1,#00C2FF)' },
-        { eyebrow: 'تخفيضات', title: 'لا تفوّت العروض', text: 'خصومات على منتجات مختارة', btn: 'العروض', url: '', image: '', bg: 'linear-gradient(135deg,#FF6A1A,#FFB36B)' }
+        { eyebrow: 'جديدنا', title: 'وصل حديثاً', text: 'أحدث القطع في المتجر', btn: 'تسوّق', url: '', image: '', photo: '1517336714731-489689fd1ca8' },
+        { eyebrow: 'تخفيضات', title: 'لا تفوّت العروض', text: 'خصومات على منتجات مختارة', btn: 'العروض', url: '', image: '', photo: '1607082349566-187342175e2f' }
       ]
     },
     tabs: { enabled: true, eyebrow: 'مختارة لك', title: 'اكتشف منتجاتنا', limit: 8 },
     darkProducts: { enabled: true, eyebrow: 'مختارات خاصة', title: 'أسعار خاصة لفترة محدودة', text: 'منتجات منتقاة بعناية من متجرنا.', source: 'latest', limit: 4, linkText: 'عرض الكل', url: '' },
-    wideBanner: { enabled: true, eyebrow: 'عرض خاص', title: 'تسوّق أكثر ووفّر أكثر', text: 'أضف منتجاتك المفضلة للسلة واستمتع بالعروض.', btn: 'ابدأ التسوق', url: '', image: '', bg: 'linear-gradient(100deg,#FF6A1A,#FF9E33)' },
+    wideBanner: { enabled: true, eyebrow: 'عرض خاص', title: 'تسوّق أكثر ووفّر أكثر', text: 'أضف منتجاتك المفضلة للسلة واستمتع بالعروض.', btn: 'ابدأ التسوق', url: '', image: '', photo: '1599669454699-248893623440' },
     bestSellers: { enabled: true, eyebrow: 'الأكثر طلباً', title: 'الأكثر مبيعاً', limit: 4 },
     video: { enabled: true, youtubeId: '', title: 'شاهد منتجاتنا عن قرب' },   // e.g. youtubeId: 'dQw4w9WgXcQ'. Empty = hidden
     story: {
@@ -253,6 +263,18 @@
   function head(eyebrow, title, end) {
     return '<div class="ish-head"><div>' + (eyebrow ? '<span class="ish-eyebrow">' + esc(eyebrow) + '</span>' : '') + '<h2 class="ish-h">' + esc(title) + '</h2></div>' + (end || '') + '</div>';
   }
+  // background photo: an Unsplash id or a full URL -> CSS background-image value ('' if none)
+  function photoUrl(v) {
+    if (!v) return '';
+    if (/[\/:.]/.test(v)) return v;                                 // a full URL
+    if (window.ISHARA_PHOTO_SRC) return window.ISHARA_PHOTO_SRC(v);   // preview: local copies
+    return 'https://images.unsplash.com/photo-' + v + '?auto=format&fit=crop&w=1800&q=70';
+  }
+  function photoStyle(v, bg) {
+    var u = photoUrl(v);
+    return u ? 'background-image:url(' + esc(u) + ')' : (bg ? 'background:' + esc(bg) : '');
+  }
+  function photoOn(el, v) { var u = photoUrl(v); if (el && u) { el.classList.add('ish-photo'); el.style.backgroundImage = 'url("' + u + '")'; } }
   function section(cls, inner) { var s = document.createElement('section'); s.className = 'ish ish-sec ' + (cls || ''); s.innerHTML = '<div class="ish-wrap">' + inner + '</div>'; return s; }
 
   /* modal */
@@ -289,7 +311,7 @@
   /* 3.1 flash sale */
   function flashSale(holder) {
     var c = CONFIG.home.flashSale; if (!c.enabled) return;
-    var sec = section('ish-flash', ''); holder.appendChild(sec);
+    var sec = section('ish-flash', ''); holder.appendChild(sec); photoOn(sec, CONFIG.photos.flash);
     fetchProducts({ source: c.source, limit: c.limit }).then(function (list) {
       if (!list.length) return fetchProducts({ source: 'latest', limit: c.limit });
       return list;
@@ -488,7 +510,7 @@
     row.scrollBy({ left: +a.getAttribute('data-ish-scroll') * row.clientWidth * 0.8, behavior: 'smooth' });
   });
   function bannerHTML(b, img, cls) {
-    return '<a class="ish-banner ' + (cls || '') + '" href="' + esc(homeUrl(b.url)) + '" style="background:' + esc(b.bg || 'var(--ish-ink)') + '">' +
+    return '<a class="ish-banner ish-photo ' + (cls || '') + '" href="' + esc(homeUrl(b.url)) + '" style="' + photoStyle(b.photo, b.bg) + '">' +
       '<div class="ish-banner__txt">' + (b.eyebrow ? '<span class="ish-pill">' + esc(b.eyebrow) + '</span>' : '') + '<h3>' + esc(b.title) + '</h3>' + (b.text ? '<p>' + esc(b.text) + '</p>' : '') + (b.btn ? '<span class="ish-btn ish-btn--light">' + esc(b.btn) + '</span>' : '') + '</div>' +
       (img ? '<div class="ish-banner__img"><img src="' + esc(img) + '" alt="" loading="lazy"></div>' : '') + '</a>';
   }
@@ -501,7 +523,7 @@
       var pics = list.map(imgOf).filter(Boolean);
       var slides = c.slides.map(function (s, i) {
         var img = s.image || pics[i] || '';
-        return '<div class="ish-slide' + (i ? '' : ' on') + '" style="background:' + esc(s.bg) + '"><div class="ish-slide__txt">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') + (s.btn ? '<a class="ish-btn ish-btn--light" href="' + esc(homeUrl(s.url, i === 1 ? offersUrl() : '')) + '">' + esc(s.btn) + '</a>' : '') + '</div>' +
+        return '<div class="ish-slide ish-photo' + (i ? '' : ' on') + '" style="' + photoStyle(s.photo, s.bg) + '"><div class="ish-slide__txt">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') + (s.btn ? '<a class="ish-btn ish-btn--light" href="' + esc(homeUrl(s.url, i === 1 ? offersUrl() : '')) + '">' + esc(s.btn) + '</a>' : '') + '</div>' +
           (img ? '<div class="ish-slide__img' + (s.image ? ' ish-slide__img--full' : '') + '"><img src="' + esc(img) + '" alt=""></div>' : '') + '</div>';
       }).join('');
       var dots = c.slides.length > 1 ? '<div class="ish-dots">' + c.slides.map(function (_, i) { return '<button type="button" data-ish-dot="' + i + '" aria-label="شريحة ' + (i + 1) + '"' + (i ? '' : ' aria-current="true"') + '></button>'; }).join('') + '</div>' : '';
@@ -576,7 +598,7 @@
     }
 
     if (B.darkProducts.enabled) {
-      var c = B.darkProducts, sd = add('ish-dark');
+      var c = B.darkProducts, sd = add('ish-dark'); photoOn(sd, CONFIG.photos.dark);
       fetchProducts({ source: c.source, limit: c.limit + 4 }).then(function (list) {
         list = list.slice(-c.limit); if (!list.length) { sd.remove(); return; }
         sd.firstChild.innerHTML = head(c.eyebrow, c.title, c.linkText ? '<a class="ish-more" href="' + esc(homeUrl(c.url, offersUrl())) + '">' + esc(c.linkText) + ' ‹</a>' : '') + (c.text ? '<p class="ish-lead">' + esc(c.text) + '</p>' : '') + '<div class="ish-grid4">' + list.map(function (p) { return card(p); }).join('') + '</div>';
@@ -607,9 +629,10 @@
 
     if (B.story.enabled) {
       var s = B.story;
-      add('ish-story', '<div class="ish-story__in">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') +
+      var sst = add('ish-story', '<div class="ish-story__in">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') +
         (s.stats.length ? '<div class="ish-stats">' + s.stats.map(function (x) { return '<div><b>' + esc(x[0]) + '</b><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div>' : '') +
         (s.btn ? '<a class="ish-btn ish-btn--ghost" href="' + esc(homeUrl(s.url)) + '">' + esc(s.btn) + '</a>' : '') + '</div>');
+      photoOn(sst, CONFIG.photos.story);
     }
 
     if (B.brands.enabled && B.brands.items.length) {
@@ -1159,7 +1182,8 @@
   function collectionBanner(sec, d) {
     var c = CONFIG.collection;
     var pics = c.photos ? d.list.map(imgOf).filter(Boolean).slice(0, 3) : [];
-    sec.firstChild.innerHTML = '<div class="ish-coll__band"><div class="ish-coll__txt">' +
+    var ph = window.ISHARA_COLLECTION_PHOTO || CONFIG.photos.collections[d.id] || CONFIG.photos.collection;
+    sec.firstChild.innerHTML = '<div class="ish-coll__band ish-photo" style="' + photoStyle(ph) + '"><div class="ish-coll__txt">' +
       (c.eyebrow ? '<span class="ish-pill">' + esc(c.eyebrow) + '</span>' : '') +
       '<h1>' + esc(d.name) + '</h1>' + (c.text ? '<p>' + esc(c.text) + '</p>' : '') +
       (d.stats.length ? '<dl class="ish-coll__stats">' + d.stats.map(function (x) { return '<div><dt>' + esc(x[1]) + '</dt><dd>' + x[0] + '</dd></div>'; }).join('') + '</dl>' : '') +
