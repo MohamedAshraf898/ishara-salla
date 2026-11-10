@@ -343,12 +343,15 @@ custom-salla-product-card:hover .ish-qv,.ish-qv:focus-visible{opacity:1;transfor
   .ish-slide__txt h2{font-size:34px}
 }
 @media (max-width:767px){
-  .ish-slider{height:auto;min-height:380px;border-radius:22px}
-  .ish-slide{grid-template-columns:1fr;padding:26px 22px 48px;gap:16px;align-items:center}
-  .ish-slide__txt h2{font-size:28px}
-  .ish-slide__txt p{font-size:15px}
+  .ish-slider{height:190px;min-height:0;border-radius:20px}
+  .ish-slide{grid-template-columns:1fr;padding:16px 18px 26px;gap:0;align-items:center}
+  .ish-slide__txt{gap:8px}
+  .ish-slide__txt h2{font-size:21px;line-height:1.25}
+  .ish-slide__txt p{display:none}
+  .ish-slide__txt .ish-btn{padding:8px 16px;font-size:13px}
+  .ish-slide .ish-pill{padding:3px 10px;font-size:11px}
   .ish-slide__img img{max-height:250px}
-  .ish-dots{inset-inline-start:22px;bottom:18px}
+  .ish-dots{inset-inline-start:18px;bottom:12px}
   .ish-cat{width:84px;font-size:12px}
   .ish-cat__img{width:76px;height:76px}
   .ish-featrow{grid-template-columns:1fr;gap:10px}
