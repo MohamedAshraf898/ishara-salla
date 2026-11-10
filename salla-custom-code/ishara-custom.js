@@ -10,6 +10,10 @@
 
   /* ===================== 1) SETTINGS — edit freely ===================== */
   var CONFIG = {
+    // Where the buttons of the custom sections go when their own url is empty.
+    // products: all products, offers: the offers page (empty = Salla's own pages).
+    // about: your "about us" page (a page you made in Salla, e.g. '/p/about-us'); empty = the story button is hidden.
+    links: { products: '', offers: '', about: '' },
     // Background photos for the dark sections (Unsplash). Each value is an Unsplash photo id, the part
     // after "photo-" in images.unsplash.com/photo-..., or any full image URL. Empty = plain dark color.
     // A dark tint is laid over each photo so the text on it stays readable.
@@ -178,9 +182,9 @@
       enabled: true,            // only shown if your theme has no slider of its own
       autoplay: 6000,
       slides: [
-        { eyebrow: 'وصل حديثاً', title: 'تشكيلة الموسم الجديدة', text: 'قطع مختارة بعناية، وتوصيل سريع لكل مدن المملكة.', btn: 'تسوّق الآن', url: '', photo: '1531297484001-80022131f5a1' },
-        { eyebrow: 'عروض حصرية', title: 'خصومات تصل إلى 50%', text: 'على منتجات مختارة ولفترة محدودة.', btn: 'شوف العروض', url: '', photo: '1607083206968-13611e3d76db' },
-        { eyebrow: 'الأكثر طلباً', title: 'اختيارات عملائنا', text: 'المنتجات اللي الكل يسأل عنها.', btn: 'اكتشف المزيد', url: '', photo: '1616588589676-62b3bd4ff6d2' }
+        { eyebrow: 'وصل حديثاً', title: 'تشكيلة الموسم الجديدة', text: 'قطع مختارة بعناية، وتوصيل سريع لكل مدن المملكة.', btn: 'تسوّق الآن', url: '', go: 'products', photo: '1531297484001-80022131f5a1' },
+        { eyebrow: 'عروض حصرية', title: 'خصومات تصل إلى 50%', text: 'على منتجات مختارة ولفترة محدودة.', btn: 'شوف العروض', url: '', go: 'offers', photo: '1607083206968-13611e3d76db' },
+        { eyebrow: 'الأكثر طلباً', title: 'اختيارات عملائنا', text: 'المنتجات اللي الكل يسأل عنها.', btn: 'اكتشف المزيد', url: '', go: 'products', photo: '1616588589676-62b3bd4ff6d2' }
       ]
     },
     categories: { enabled: true, title: 'تسوّق حسب القسم', eyebrow: 'الأقسام', limit: 8 },
@@ -196,13 +200,13 @@
     banners: {
       enabled: true,
       items: [
-        { eyebrow: 'جديدنا', title: 'وصل حديثاً', text: 'أحدث القطع في المتجر', btn: 'تسوّق', url: '', image: '', photo: '1517336714731-489689fd1ca8' },
-        { eyebrow: 'تخفيضات', title: 'لا تفوّت العروض', text: 'خصومات على منتجات مختارة', btn: 'العروض', url: '', image: '', photo: '1607082349566-187342175e2f' }
+        { eyebrow: 'جديدنا', title: 'وصل حديثاً', text: 'أحدث القطع في المتجر', btn: 'تسوّق', url: '', go: 'products', image: '', photo: '1517336714731-489689fd1ca8' },
+        { eyebrow: 'تخفيضات', title: 'لا تفوّت العروض', text: 'خصومات على منتجات مختارة', btn: 'العروض', url: '', go: 'offers', image: '', photo: '1607082349566-187342175e2f' }
       ]
     },
     tabs: { enabled: true, eyebrow: 'مختارة لك', title: 'اكتشف منتجاتنا', limit: 8 },
     darkProducts: { enabled: true, eyebrow: 'مختارات خاصة', title: 'أسعار خاصة لفترة محدودة', text: 'منتجات منتقاة بعناية من متجرنا.', source: 'latest', limit: 4, linkText: 'عرض الكل', url: '' },
-    wideBanner: { enabled: true, eyebrow: 'عرض خاص', title: 'تسوّق أكثر ووفّر أكثر', text: 'أضف منتجاتك المفضلة للسلة واستمتع بالعروض.', btn: 'ابدأ التسوق', url: '', image: '', photo: '1599669454699-248893623440' },
+    wideBanner: { enabled: true, eyebrow: 'عرض خاص', title: 'تسوّق أكثر ووفّر أكثر', text: 'أضف منتجاتك المفضلة للسلة واستمتع بالعروض.', btn: 'ابدأ التسوق', url: '', go: 'products', image: '', photo: '1599669454699-248893623440' },
     bestSellers: { enabled: true, eyebrow: 'الأكثر طلباً', title: 'الأكثر مبيعاً', limit: 4 },
     video: { enabled: true, youtubeId: '', title: 'شاهد منتجاتنا عن قرب' },   // e.g. youtubeId: 'dQw4w9WgXcQ'. Empty = hidden
     story: {
@@ -521,7 +525,12 @@
     return CATS;
   }
   function homeUrl(u, fallback) { return u || fallback || (function () { try { return salla.url.get(''); } catch (e) { return '/'; } })(); }
-  function offersUrl() { try { return salla.url.get('offers'); } catch (e) { return '#'; } }
+  function goUrl(k) {
+    var own = (window.ISHARA_LINKS && window.ISHARA_LINKS[k]) || (CONFIG.links && CONFIG.links[k]);
+    if (own || !k || k === 'about') return own || '';
+    try { return salla.url.get(k); } catch (e) { return '/' + k; }
+  }
+  function offersUrl() { return goUrl('offers'); }
   function rowSlider(cards) {
     return '<div class="ish-rowwrap"><button type="button" class="ish-arrow ish-arrow--prev" data-ish-scroll="1" aria-label="السابق">›</button><div class="ish-row-scroll" data-ish-row-scroll>' + cards + '</div><button type="button" class="ish-arrow ish-arrow--next" data-ish-scroll="-1" aria-label="التالي">‹</button></div>';
   }
@@ -531,7 +540,7 @@
     row.scrollBy({ left: +a.getAttribute('data-ish-scroll') * row.clientWidth * 0.8, behavior: 'smooth' });
   });
   function bannerHTML(b, img, cls) {
-    return '<a class="ish-banner ish-photo ' + (cls || '') + '" href="' + esc(homeUrl(b.url)) + '" style="' + photoStyle(b.photo, b.bg) + '">' +
+    return '<a class="ish-banner ish-photo ' + (cls || '') + '" href="' + esc(homeUrl(b.url, goUrl(b.go))) + '" style="' + photoStyle(b.photo, b.bg) + '">' +
       '<div class="ish-banner__txt">' + (b.eyebrow ? '<span class="ish-pill">' + esc(b.eyebrow) + '</span>' : '') + '<h3>' + esc(b.title) + '</h3>' + (b.text ? '<p>' + esc(b.text) + '</p>' : '') + (b.btn ? '<span class="ish-btn ish-btn--light">' + esc(b.btn) + '</span>' : '') + '</div>' +
       (img ? '<div class="ish-banner__img"><img src="' + esc(img) + '" alt="" loading="lazy"></div>' : '') + '</a>';
   }
@@ -542,7 +551,7 @@
     var sec = section('ish-hero', ''); before.parentNode.insertBefore(sec, before);
     fetchProducts({ source: 'latest', limit: 12 }).then(function (list) {
       var slides = c.slides.map(function (s, i) {
-        return '<div class="ish-slide ish-photo' + (i ? '' : ' on') + '" style="' + photoStyle(s.photo, s.bg) + '"><div class="ish-slide__txt">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') + (s.btn ? '<a class="ish-btn ish-btn--light" href="' + esc(homeUrl(s.url, i === 1 ? offersUrl() : '')) + '">' + esc(s.btn) + '</a>' : '') + '</div>' +
+        return '<div class="ish-slide ish-photo' + (i ? '' : ' on') + '" style="' + photoStyle(s.photo, s.bg) + '"><div class="ish-slide__txt">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') + (s.btn ? '<a class="ish-btn ish-btn--light" href="' + esc(homeUrl(s.url, goUrl(s.go))) + '">' + esc(s.btn) + '</a>' : '') + '</div>' +
           '</div>';
       }).join('');
       var dots = c.slides.length > 1 ? '<div class="ish-dots">' + c.slides.map(function (_, i) { return '<button type="button" data-ish-dot="' + i + '" aria-label="شريحة ' + (i + 1) + '"' + (i ? '' : ' aria-current="true"') + '></button>'; }).join('') + '</div>' : '';
@@ -650,7 +659,7 @@
       var s = B.story;
       var sst = add('ish-story', '<div class="ish-story__in">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') +
         (s.stats.length ? '<div class="ish-stats">' + s.stats.map(function (x) { return '<div><b>' + esc(x[0]) + '</b><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div>' : '') +
-        (s.btn ? '<a class="ish-btn ish-btn--ghost" href="' + esc(homeUrl(s.url)) + '">' + esc(s.btn) + '</a>' : '') + '</div>');
+        (s.btn && (s.url || goUrl('about')) ? '<a class="ish-btn ish-btn--ghost" href="' + esc(s.url || goUrl('about')) + '">' + esc(s.btn) + '</a>' : '') + '</div>');
       photoOn(sst, CONFIG.photos.story);
     }
 

@@ -33,6 +33,12 @@ free-shipping progress bar on the cart page (set `threshold` to match your Salla
 a sticky buy bar on product pages that presses the theme's own add-to-cart button,
 recently viewed products, wishlist hearts on the custom sections' cards, and a back-to-top button.
 
+## Links
+
+Every button of the custom sections opens a real page. A slide or banner with its own `url` goes there. Without one, its `go` field picks the page: `products` (all products) or `offers` (the offers page). Those are Salla's own pages, and you can point them elsewhere in `CONFIG.links`. The story section's "تعرّف علينا" button goes to `CONFIG.links.about`. Set it to the about page you made in Salla; while it's empty the button is hidden instead of leading nowhere.
+
+In the preview, all products is `collection.html#all` and the about page is `info.html#about`. Every link on every page was checked to open a real page or section.
+
 ## Logo
 
 The `brand/` folder has the store logo: a signal icon (إشارة means "signal") in the store blue with the orange dot, next to the name in Readex Pro.

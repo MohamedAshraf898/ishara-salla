@@ -108,6 +108,7 @@
   if (PAGE === 'collection') window.ISHARA_COLLECTION_LAYOUT = LAYOUTS[cat] || 'showroom';
   // preview only: background photos come from local copies of the same Unsplash photos,
   // and the laptops banner gets a laptop photo (on the live store: CONFIG.photos.collections)
+  window.ISHARA_LINKS = { about: 'info.html#about' };   // preview only: CONFIG.links.about on the live store
   window.ISHARA_PHOTO_SRC = function (id) { return 'img/u/' + id + '.jpg'; };
   if (PAGE === 'collection' && cat === 2) window.ISHARA_COLLECTION_PHOTO = '1603302576837-37561b2e2302';
   if (PAGE === 'product' && BY[pid]) cfgPage = { slug: 'product.single', id: pid, parent: { url: 'store/c' + BY[pid].cat } };
@@ -119,7 +120,7 @@
   if (PAGE === 'wishlist') cfgPage = { slug: 'customer.wishlist' };
   if (PAGE === 'account') cfgPage = { slug: 'customer.orders.index' };
   if (PAGE === 'info') cfgPage = { slug: 'page-single' };
-  var URLS = { '': 'index.html', offers: 'collection.html#offers', wishlist: 'wishlist.html', cart: 'cart.html', profile: 'account.html', checkout: 'checkout.html' };
+  var URLS = { '': 'index.html', products: 'collection.html#all', offers: 'collection.html#offers', wishlist: 'wishlist.html', cart: 'cart.html', profile: 'account.html', checkout: 'checkout.html' };
   function list(o) {
     var l = P;
     if (o.source === 'offers') l = P.filter(function (p) { return p.is_on_sale; });
