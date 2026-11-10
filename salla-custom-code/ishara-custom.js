@@ -163,9 +163,9 @@
       enabled: true,            // only shown if your theme has no slider of its own
       autoplay: 6000,
       slides: [
-        { eyebrow: 'وصل حديثاً', title: 'تشكيلة الموسم الجديدة', text: 'قطع مختارة بعناية، وتوصيل سريع لكل مدن المملكة.', btn: 'تسوّق الآن', url: '', image: '', photo: '1531297484001-80022131f5a1' },
-        { eyebrow: 'عروض حصرية', title: 'خصومات تصل إلى 50%', text: 'على منتجات مختارة ولفترة محدودة.', btn: 'شوف العروض', url: '', image: '', photo: '1607083206968-13611e3d76db' },
-        { eyebrow: 'الأكثر طلباً', title: 'اختيارات عملائنا', text: 'المنتجات اللي الكل يسأل عنها.', btn: 'اكتشف المزيد', url: '', image: '', photo: '1616588589676-62b3bd4ff6d2' }
+        { eyebrow: 'وصل حديثاً', title: 'تشكيلة الموسم الجديدة', text: 'قطع مختارة بعناية، وتوصيل سريع لكل مدن المملكة.', btn: 'تسوّق الآن', url: '', photo: '1531297484001-80022131f5a1' },
+        { eyebrow: 'عروض حصرية', title: 'خصومات تصل إلى 50%', text: 'على منتجات مختارة ولفترة محدودة.', btn: 'شوف العروض', url: '', photo: '1607083206968-13611e3d76db' },
+        { eyebrow: 'الأكثر طلباً', title: 'اختيارات عملائنا', text: 'المنتجات اللي الكل يسأل عنها.', btn: 'اكتشف المزيد', url: '', photo: '1616588589676-62b3bd4ff6d2' }
       ]
     },
     categories: { enabled: true, title: 'تسوّق حسب القسم', eyebrow: 'الأقسام', limit: 8 },
@@ -520,11 +520,9 @@
     var c = BASICS.hero; if (!c.enabled || !c.slides.length) return;
     var sec = section('ish-hero', ''); before.parentNode.insertBefore(sec, before);
     fetchProducts({ source: 'latest', limit: 12 }).then(function (list) {
-      var pics = list.map(imgOf).filter(Boolean);
       var slides = c.slides.map(function (s, i) {
-        var img = s.image || pics[i] || '';
         return '<div class="ish-slide ish-photo' + (i ? '' : ' on') + '" style="' + photoStyle(s.photo, s.bg) + '"><div class="ish-slide__txt">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') + (s.btn ? '<a class="ish-btn ish-btn--light" href="' + esc(homeUrl(s.url, i === 1 ? offersUrl() : '')) + '">' + esc(s.btn) + '</a>' : '') + '</div>' +
-          (img ? '<div class="ish-slide__img' + (s.image ? ' ish-slide__img--full' : '') + '"><img src="' + esc(img) + '" alt=""></div>' : '') + '</div>';
+          '</div>';
       }).join('');
       var dots = c.slides.length > 1 ? '<div class="ish-dots">' + c.slides.map(function (_, i) { return '<button type="button" data-ish-dot="' + i + '" aria-label="شريحة ' + (i + 1) + '"' + (i ? '' : ' aria-current="true"') + '></button>'; }).join('') + '</div>' : '';
       sec.firstChild.innerHTML = '<div class="ish-slider">' + slides + dots + '</div>';
