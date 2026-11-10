@@ -18,7 +18,22 @@
       dark: '1518770660439-4636190af475',       // special prices: circuit board
       story: '1510519138101-570d1dca3d66',      // our story: desk at night
       collection: '1593305841991-05c297ba4575', // category banner (banner layout), any category
-      collections: {}                           // per category id, e.g. { 123456: '1603302576837-37561b2e2302' }
+      collections: {},                          // per category id, e.g. { 123456: '1603302576837-37561b2e2302' }
+      // Category pictures (home categories row, the quiz, and the category tiles) when a category has no
+      // image of its own in Salla: the first row whose words appear in the category name wins.
+      categories: [
+        ['ايربود|إيربود|airpod|earbud|بودز', '1606741965326-cb990ae01bb2'],
+        ['سماع|headphone|headset|audio', '1618366712010-f4ae9c647dcb'],
+        ['ساعة|ساعات|watch', '1546868871-7041f2a55e12'],
+        ['جوال|موبايل|هاتف|هواتف|phone|mobile', '1511707171634-5f897ff02aa9'],
+        ['لابتوب|لاب توب|حاسب|حواسيب|كمبيوتر|laptop|computer|notebook', '1611186871348-b1ce696e52c9'],
+        ['تابلت|ايباد|آيباد|أيباد|لوحي|tablet|ipad', '1544244015-0df4b3ffc6b0'],
+        ['ألعاب|العاب|قيمنق|جيمنج|بلايستيشن|بلاي ستيشن|اكس بوكس|gaming|game|playstation|xbox|console', '1606144042614-b2417e99c4e3'],
+        ['كاميرا|كاميرات|تصوير|camera', '1516035069371-29a1b244cc32'],
+        ['تلفزيون|تلفاز|شاشات|شاشة|television|\\btv\\b|screen|monitor', '1593359677879-a4bb92f829d1'],
+        ['إكسسوار|اكسسوار|ملحقات|شاحن|شواحن|كابل|كيبل|accessor|charger|cable', '1572721546624-05bf65ad7679']
+      ],
+      category: '1498049794561-7780e7231661'    // any other category
     },
     home: {
       // The sections go right after the first of these blocks (your hero banner).
@@ -264,17 +279,24 @@
     return '<div class="ish-head"><div>' + (eyebrow ? '<span class="ish-eyebrow">' + esc(eyebrow) + '</span>' : '') + '<h2 class="ish-h">' + esc(title) + '</h2></div>' + (end || '') + '</div>';
   }
   // background photo: an Unsplash id or a full URL -> CSS background-image value ('' if none)
-  function photoUrl(v) {
+  function photoUrl(v, w) {
     if (!v) return '';
     if (/[\/:.]/.test(v)) return v;                                 // a full URL
     if (window.ISHARA_PHOTO_SRC) return window.ISHARA_PHOTO_SRC(v);   // preview: local copies
-    return 'https://images.unsplash.com/photo-' + v + '?auto=format&fit=crop&w=1800&q=70';
+    return 'https://images.unsplash.com/photo-' + v + '?auto=format&fit=crop&w=' + (w || 1800) + '&q=70';
   }
   function photoStyle(v, bg) {
     var u = photoUrl(v);
     return u ? 'background-image:url(' + esc(u) + ')' : (bg ? 'background:' + esc(bg) : '');
   }
   function photoOn(el, v) { var u = photoUrl(v); if (el && u) { el.classList.add('ish-photo'); el.style.backgroundImage = 'url("' + u + '")'; } }
+  // picture for a category: its own Salla image, else a photo that matches its name
+  function catMatch(name) {
+    var n = String(name || '').toLowerCase(), rows = CONFIG.photos.categories || [];
+    for (var i = 0; i < rows.length; i++) if (new RegExp(rows[i][0], 'i').test(n)) return rows[i][1];
+    return '';
+  }
+  function catPic(x, w) { return x.image || photoUrl(catMatch(x.name) || CONFIG.photos.category, w || 400); }
   function section(cls, inner) { var s = document.createElement('section'); s.className = 'ish ish-sec ' + (cls || ''); s.innerHTML = '<div class="ish-wrap">' + inner + '</div>'; return s; }
 
   /* modal */
@@ -426,7 +448,7 @@
       var opts = function (items) {
         return '<div><span class="ish-eyebrow">السؤال ' + (st.s + 1) + ' من 3</span><h3 class="ish-h-sm" style="margin:4px 0 16px">' + esc(c.steps[st.s]) + '</h3><div class="ish-opts">' + items.join('') + '</div></div>';
       };
-      if (st.s === 0) main = opts(cats.map(function (x, i) { return '<button type="button" class="ish-opt" data-ish-q="cat" data-v="' + i + '">' + (x.image ? '<img src="' + esc(x.image) + '" alt="">' : '<span class="ish-ico">' + esc(String(x.name).trim().replace(/^ال(?=\S{2})/, '').charAt(0)) + '</span>') + '<span>' + esc(x.name) + '</span></button>'; }));
+      if (st.s === 0) main = opts(cats.map(function (x, i) { return '<button type="button" class="ish-opt" data-ish-q="cat" data-v="' + i + '">' + '<img src="' + esc(catPic(x)) + '" alt="">' + '<span>' + esc(x.name) + '</span></button>'; }));
       else if (st.s === 1) main = opts(budgets().map(function (b, i) { return '<button type="button" class="ish-opt" data-ish-q="budget" data-v="' + i + '"><span class="ish-ico">' + '●'.repeat(i + 1) + '</span><span>' + esc(b[2]) + '</span>' + (b[3] ? '<small>' + b[3] + '</small>' : '') + '</button>'; }));
       else if (st.s === 2) main = opts(PRIOS.map(function (x, i) { return '<button type="button" class="ish-opt" data-ish-q="prio" data-v="' + i + '"><span class="ish-ico">' + x[2] + '</span><span>' + x[1] + '</span></button>'; }));
       else main = '<div>' + head('اخترنا لك', 'أفضل الخيارات لك', '<button type="button" class="ish-btn ish-btn--outline" data-ish-q="reset">ابدأ من جديد</button>') + '<div class="ish-grid3">' + results().map(function (p) { return card(p); }).join('') + '</div></div>';
@@ -498,7 +520,6 @@
     }).catch(function (e) { warn(e); return []; });
     return CATS;
   }
-  function letter(n) { return esc(String(n || '').trim().replace(/^ال(?=\S{2})/, '').charAt(0)); }
   function homeUrl(u, fallback) { return u || fallback || (function () { try { return salla.url.get(''); } catch (e) { return '/'; } })(); }
   function offersUrl() { try { return salla.url.get('offers'); } catch (e) { return '#'; } }
   function rowSlider(cards) {
@@ -551,7 +572,7 @@
       getCats().then(function (cats) {
         cats = cats.slice(0, B.categories.limit); if (!cats.length) { sc.remove(); return; }
         sc.firstChild.innerHTML = head(B.categories.eyebrow, B.categories.title) + '<div class="ish-catrow">' + cats.map(function (x) {
-          return '<a class="ish-cat" href="' + esc(x.url) + '"><span class="ish-cat__img">' + (x.image ? '<img src="' + esc(x.image) + '" alt="" loading="lazy">' : '<b>' + letter(x.name) + '</b>') + '</span><span>' + esc(x.name) + '</span></a>';
+          return '<a class="ish-cat" href="' + esc(x.url) + '"><span class="ish-cat__img"><img src="' + esc(catPic(x)) + '" alt="" loading="lazy"></span><span>' + esc(x.name) + '</span></a>';
         }).join('') + '</div>';
       });
     }
@@ -640,7 +661,7 @@
     if (B.reviews.enabled && B.reviews.items.length) {
       add('ish-reviews', head('', B.reviews.title) + rowSlider(B.reviews.items.map(function (r) {
         var n = Math.max(0, Math.min(5, Math.round(r.rating || 5)));
-        return '<figure class="ish-rev"><div class="ish-stars" aria-label="' + n + ' من 5">' + '★'.repeat(n) + '<i>' + '★'.repeat(5 - n) + '</i></div><blockquote>' + esc(r.text) + '</blockquote><figcaption><span class="ish-avatar">' + letter(r.name) + '</span><div><b>' + esc(r.name) + '</b>' + (r.city ? '<small>' + esc(r.city) + '</small>' : '') + '</div></figcaption></figure>';
+        return '<figure class="ish-rev"><div class="ish-stars" aria-label="' + n + ' من 5">' + '★'.repeat(n) + '<i>' + '★'.repeat(5 - n) + '</i></div><blockquote>' + esc(r.text) + '</blockquote><figcaption><span class="ish-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><circle cx="12" cy="8" r="4.2"/><path d="M3.5 21c.6-4.4 4.1-6.8 8.5-6.8s7.9 2.4 8.5 6.8z"/></svg></span><div><b>' + esc(r.name) + '</b>' + (r.city ? '<small>' + esc(r.city) + '</small>' : '') + '</div></figcaption></figure>';
       }).join('')));
     }
   }
@@ -1241,16 +1262,16 @@
     var others = d.cats.filter(function (x) { return catId(x) !== d.id; }).slice(0, 8);
     if (o.moreCats && others.length) {
       var more = section('ish-show__more', head('', o.moreTitle || '') + '<div class="ish-show__tiles">' + others.map(function (x) {
-        return '<a class="ish-ctile" href="' + esc(x.url) + '">' + (x.image ? '<img src="' + esc(x.image) + '" alt="" loading="lazy">' : '<i aria-hidden="true">' + letter(x.name) + '</i>') + '<span>' + esc(x.name) + '</span></a>';
+        return '<a class="ish-ctile" href="' + esc(x.url) + '"><img src="' + esc(catPic(x, 700)) + '" alt="" loading="lazy"><span>' + esc(x.name) + '</span></a>';
       }).join('') + '</div>');
       main.appendChild(more);
       if (others.length % 3 === 0 || others.length < 4) more.querySelector('.ish-show__tiles').classList.add('ish-cols3');
-      // categories without their own image get a photo of one of their products
+      // a category with no image and a name that matches no photo gets a photo of one of its products
       others.forEach(function (x, k) {
-        var cid = catId(x); if (x.image || !cid) return;
+        var cid = catId(x); if (x.image || catMatch(x.name) || !cid) return;
         fetchProducts({ source: 'categories', source_value: [cid], limit: 1 }).then(function (ps) {
           var u = ps[0] && imgOf(ps[0]), t = $$('.ish-ctile', more)[k]; if (!u || !t) return;
-          var im = new Image(); im.src = u; im.alt = ''; im.loading = 'lazy'; var ph = t.querySelector('i'); if (ph) ph.remove(); t.insertBefore(im, t.firstChild);
+          var im = new Image(); im.src = u; im.alt = ''; im.loading = 'lazy'; var old = t.querySelector('img'); if (old) old.remove(); t.insertBefore(im, t.firstChild);
         });
       });
     }

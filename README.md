@@ -39,6 +39,8 @@ The dark sections use photos from [Unsplash](https://unsplash.com) instead of co
 
 Change them in `CONFIG.photos` (flash sale, special prices, story, category banner, and `collections` for a photo per category id) and in the `photo` field of each hero slide and banner. A value is an Unsplash photo id (the part after `photo-` in an `images.unsplash.com/photo-...` link) or any full image URL, for example a photo uploaded to your Salla store. An empty value gives a plain dark background. The images load from Unsplash's own servers, as Unsplash asks.
 
+Categories without their own image in Salla get a photo that matches their name (phones, laptops, tablets, headphones, earbuds, smart watches, gaming, cameras, TVs, accessories) instead of their first letter: in the home categories row, the quiz and the category tiles. The keyword list is `CONFIG.photos.categories`, and `CONFIG.photos.category` is the photo for any other category. An image you set on a category in Salla always comes first. Reviews show a person icon instead of the reviewer's initial.
+
 In the preview the same photos are served as local copies (`img/u/`), because the Claude preview can't load images from other sites.
 
 ## Product page layouts
