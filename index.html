@@ -6,7 +6,6 @@
 <meta name="theme-color" content="#1746D1">
 <link rel="icon" type="image/svg+xml" href="img/logo-mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Readex+Pro:wght@600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Readex+Pro:wght@600;700;800&display=swap"></noscript>
 <link rel="preload" as="image" href="img/u/1531297484001-80022131f5a1-m.webp" media="(max-width: 900px)" fetchpriority="high">
 <link rel="preload" as="image" href="img/u/1531297484001-80022131f5a1.webp" media="(min-width: 901px)" fetchpriority="high">
@@ -40,9 +39,9 @@
 </footer>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <script>/* the scripts start right after the first paint, so the page shows first */
-(function(){var go=function(){['assets/products.js?v=1deab9ab','assets/shop.js?v=8b4c9575','assets/ishara-custom.min.js?v=912ba7eb'].forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;document.body.appendChild(e);});};
+(function(){var go=function(){var fl=document.createElement('link');fl.rel='stylesheet';fl.href='https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Readex+Pro:wght@600;700;800&display=swap';document.head.appendChild(fl);['assets/products.js?v=1deab9ab','assets/shop.js?v=8b4c9575','assets/ishara-custom.min.js?v=912ba7eb'].forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;document.body.appendChild(e);});};
 var after=function(){requestAnimationFrame(function(){requestAnimationFrame(function(){setTimeout(go,0);});});};
-var hero=document.querySelector('link[rel=preload][as=image]:not([media]),link[rel=preload][as=image]'),hp=null;
+var hp=null;
 document.querySelectorAll('link[rel=preload][as=image]').forEach(function(l){if(!l.media||matchMedia(l.media).matches)hp=l.href;});
 if(hp){var im=new Image(),fired=false,f=function(){if(fired)return;fired=true;after();};im.onload=im.onerror=f;im.src=hp;setTimeout(f,2500);}else if(window.PerformanceObserver&&PerformanceObserver.supportedEntryTypes&&PerformanceObserver.supportedEntryTypes.indexOf('paint')>-1){var done=false,o=new PerformanceObserver(function(){if(done)return;done=true;o.disconnect();after();});o.observe({type:'paint',buffered:true});setTimeout(function(){if(!done){done=true;go();}},1500);}else after();})();</script>
 <noscript><style>.ish-dots{display:none}</style></noscript>
