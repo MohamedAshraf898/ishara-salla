@@ -333,7 +333,7 @@
   function homeAnchor() {
     var main = $('.app-inner > main') || $('main');
     if (!main) return null;
-    var hero = $(CONFIG.home.insertAfter, main);
+    var hero = $(CONFIG.home.insertAfter, main) || document.getElementById('ish-hero-ph');
     var holder = document.createElement('div'); holder.className = 'ish-home';
     if (hero) hero.parentNode.insertBefore(holder, hero.nextSibling);
     else { var first = $('section, .s-block', main); if (first) first.parentNode.insertBefore(holder, first); else main.prepend(holder); }
@@ -554,14 +554,19 @@
   /* hero slider (top of page, only when the theme has none) */
   function hero(before) {
     var c = BASICS.hero; if (!c.enabled || !c.slides.length) return;
-    var sec = section('ish-hero', ''); before.parentNode.insertBefore(sec, before);
+    // a page may already hold the first slide as static HTML (for speed): keep it and add the rest around it
+    var ph = document.getElementById('ish-hero-ph');
+    var sec = ph || section('ish-hero', ''); if (!ph) before.parentNode.insertBefore(sec, before);
     (function () {
       var slides = c.slides.map(function (s, i) {
         return '<div class="ish-slide ish-photo' + (i ? '' : ' on') + '"' + (i ? ' data-ish-style="' + photoStyle(s.photo, s.bg) : ' style="' + photoStyle(s.photo, s.bg)) + '"><div class="ish-slide__txt">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') + (s.btn ? '<a class="ish-btn ish-btn--light" href="' + esc(homeUrl(s.url, goUrl(s.go))) + '">' + esc(s.btn) + '</a>' : '') + '</div>' +
           '</div>';
       }).join('');
       var dots = c.slides.length > 1 ? '<div class="ish-dots">' + c.slides.map(function (_, i) { return '<button type="button" data-ish-dot="' + i + '" aria-label="شريحة ' + (i + 1) + '"' + (i ? '' : ' aria-current="true"') + '></button>'; }).join('') + '</div>' : '';
-      sec.firstChild.innerHTML = '<div class="ish-slider">' + slides + dots + '</div>';
+      if (ph) {
+        var box = document.createElement('div'); box.innerHTML = slides + dots; box.removeChild(box.firstChild);
+        var sl = $('.ish-slider', ph); while (box.firstChild) sl.appendChild(box.firstChild);
+      } else sec.firstChild.innerHTML = '<div class="ish-slider">' + slides + dots + '</div>';
       var later = function () { $$('[data-ish-style]', sec).forEach(function (el) { el.setAttribute('style', el.getAttribute('data-ish-style')); el.removeAttribute('data-ish-style'); }); };
       if (document.readyState === 'complete') setTimeout(later, 300); else window.addEventListener('load', function () { setTimeout(later, 300); });
       var cur = 0, n = c.slides.length, timer;
