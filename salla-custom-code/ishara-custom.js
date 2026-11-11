@@ -285,11 +285,15 @@
     return '<div class="ish-head"><div>' + (eyebrow ? '<span class="ish-eyebrow">' + esc(eyebrow) + '</span>' : '') + '<h2 class="ish-h">' + esc(title) + '</h2></div>' + (end || '') + '</div>';
   }
   // background photo: an Unsplash id or a full URL -> CSS background-image value ('' if none)
+  function screenW() {   // screen width in real pixels, rounded up to 200px steps
+    var px = (window.innerWidth || 1200) * Math.min(window.devicePixelRatio || 1, 2);
+    return Math.max(600, Math.ceil(px / 200) * 200);
+  }
   function photoUrl(v, w) {
     if (!v) return '';
     if (/[\/:.]/.test(v)) return v;                                 // a full URL
     if (window.ISHARA_PHOTO_SRC) return window.ISHARA_PHOTO_SRC(v);   // preview: local copies
-    return 'https://images.unsplash.com/photo-' + v + '?auto=format&fit=crop&w=' + (w || 1800) + '&q=70';
+    return 'https://images.unsplash.com/photo-' + v + '?auto=format&fit=crop&w=' + Math.min(w || 1800, screenW()) + '&q=70';
   }
   function photoStyle(v, bg) {
     var u = photoUrl(v);
@@ -551,13 +555,15 @@
   function hero(before) {
     var c = BASICS.hero; if (!c.enabled || !c.slides.length) return;
     var sec = section('ish-hero', ''); before.parentNode.insertBefore(sec, before);
-    fetchProducts({ source: 'latest', limit: 12 }).then(function (list) {
+    (function () {
       var slides = c.slides.map(function (s, i) {
-        return '<div class="ish-slide ish-photo' + (i ? '' : ' on') + '" style="' + photoStyle(s.photo, s.bg) + '"><div class="ish-slide__txt">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') + (s.btn ? '<a class="ish-btn ish-btn--light" href="' + esc(homeUrl(s.url, goUrl(s.go))) + '">' + esc(s.btn) + '</a>' : '') + '</div>' +
+        return '<div class="ish-slide ish-photo' + (i ? '' : ' on') + '"' + (i ? ' data-ish-style="' + photoStyle(s.photo, s.bg) : ' style="' + photoStyle(s.photo, s.bg)) + '"><div class="ish-slide__txt">' + (s.eyebrow ? '<span class="ish-pill">' + esc(s.eyebrow) + '</span>' : '') + '<h2>' + esc(s.title) + '</h2>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') + (s.btn ? '<a class="ish-btn ish-btn--light" href="' + esc(homeUrl(s.url, goUrl(s.go))) + '">' + esc(s.btn) + '</a>' : '') + '</div>' +
           '</div>';
       }).join('');
       var dots = c.slides.length > 1 ? '<div class="ish-dots">' + c.slides.map(function (_, i) { return '<button type="button" data-ish-dot="' + i + '" aria-label="شريحة ' + (i + 1) + '"' + (i ? '' : ' aria-current="true"') + '></button>'; }).join('') + '</div>' : '';
       sec.firstChild.innerHTML = '<div class="ish-slider">' + slides + dots + '</div>';
+      var later = function () { $$('[data-ish-style]', sec).forEach(function (el) { el.setAttribute('style', el.getAttribute('data-ish-style')); el.removeAttribute('data-ish-style'); }); };
+      if (document.readyState === 'complete') setTimeout(later, 300); else window.addEventListener('load', function () { setTimeout(later, 300); });
       var cur = 0, n = c.slides.length, timer;
       var go = function (i) {
         cur = (i + n) % n;
@@ -572,7 +578,7 @@
       sec.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
       sec.addEventListener('touchend', function (e) { if (x0 == null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) { go(cur + (dx > 0 ? 1 : -1)); play(); } x0 = null; });
       play();
-    });
+    })();
   }
 
   function basics(holder) {
